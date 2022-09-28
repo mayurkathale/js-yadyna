@@ -34,7 +34,7 @@ document.addEventListener('DOMContentLoaded', function () {
       method: 'GET',
       queryParameters: {
         PageSize: 24,
-        Language: Weglot ? Weglot.getCurrentLang() : 'da',
+        Language: 'da',
         display: true
       },
       version: 'v2',
@@ -49,7 +49,7 @@ document.addEventListener('DOMContentLoaded', function () {
       method: 'GET',
       queryParameters: {
         PageSize: 50,
-        Language: Weglot ? Weglot.getCurrentLang() : 'da',
+        Language: 'da',
         Featured: true,
         display: true
       },
@@ -62,7 +62,7 @@ document.addEventListener('DOMContentLoaded', function () {
       endpoint: 'categories',
       method: 'GET',
       queryParameters: {
-        Language: Weglot ? Weglot.getCurrentLang() : 'da',
+        Language: 'da',
       },
       version: 'v1',
       structure: 'data',
@@ -74,7 +74,7 @@ document.addEventListener('DOMContentLoaded', function () {
       endpoint: 'categories',
       method: 'GET',
       queryParameters: {
-        Language: Weglot ? Weglot.getCurrentLang() : 'da',
+        Language: 'da',
       },
       version: 'v1',
       structure: 'data',
@@ -88,7 +88,7 @@ document.addEventListener('DOMContentLoaded', function () {
       method: 'GET',
       queryParameters: {
         PageSize: 50,
-        Language: Weglot ? Weglot.getCurrentLang() : 'da',
+        Language: 'da',
         Featured: true
       },
       limit: 6,
@@ -620,8 +620,3 @@ document.addEventListener('DOMContentLoaded', function () {
     $('.sibling.absolute').hide();
   });
 });
-
-
-
-
-
