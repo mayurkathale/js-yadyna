@@ -474,7 +474,7 @@ document.addEventListener('DOMContentLoaded', function () {
     if (!$(this).hasClass('n-item-filters'))
       return;
     var catArray = [];
-    $('.n-list-filters-emp-copy').removeClass('w--redirected-checked');
+    $('div.w-checkbox-input').removeClass('w--redirected-checked');
     if (!$(this).find("div.w-checkbox-input").hasClass('w--redirected-checked'))
       catArray.push($(this).children().data('cat-id'));
     displaySubcategory(catArray);
@@ -647,7 +647,3 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   });
 });
-
-
-
-
