@@ -28,7 +28,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
   const config = {
     allShops: {
-      selector: '.n-shops-collection-list',
+      selector: '.n-featured-shops-wrapper .all-shop-list-wrapper',
       templateGetter: 'getAllShop',
       endpoint: 'shops',
       method: 'GET',
@@ -57,7 +57,7 @@ document.addEventListener('DOMContentLoaded', function () {
       structure: 'data.result'
     },
     categories: {
-      selector: '.n-wrapper-collection-filters-copy .n-list-filters-emp-copy',
+      selector: '.n-checkbox-wrapper',
       templateGetter: 'getCategory',
       endpoint: 'categories',
       method: 'GET',
@@ -111,23 +111,17 @@ document.addEventListener('DOMContentLoaded', function () {
         }
         var category = '';
         if (data.mainCategory) {
-          category = `<div class="n-category-wrapper">
-          <div class="n-category-text">
-            ${data.mainCategory.name}
-          </div>
-        </div>`;
+          category = data.mainCategory.name;
         }
+        
         return `
-        <div role="listitem" class="w-dyn-item">
-          <div class="n-wrapper-store-card">
-            <a href="${data.marketingUrl}" class="n-store-link w-inline-block">
-              ${category}
-            </a>
-            <img src="${imageUrl}" loading="lazy" alt="" class="n-store-image">
-            <div fs-cmsfilter-field="name" class="n-shop-name">
-              ${truncateString(data.name)}
-            </div>
+        <div class="n-wrapper-store-card">
+          <a href="${data.marketingUrl}" class="n-store-link w-inline-block"></a>
+          <div class="n-store-image-wrapper"><img src="${imageUrl}" loading="lazy" alt="" class="n-store-image">
+            <div class="n-logo-wrapper"><img src="${data.logoImages[0].url}" loading="lazy" alt="" class="n-shop-logo"></div>
           </div>
+          <div fs-cmsfilter-field="name" class="n-shop-name">${truncateString(data.name)}</div>
+          <div class="n-card-category-name">${category}</div>
         </div>
         `;
       },
@@ -141,16 +135,17 @@ document.addEventListener('DOMContentLoaded', function () {
         }
         var category = '';
         if (data.mainCategory) {
-          category = `<div class="n-category-wrapper-featured">
-                <div class="n-category-text-featured">${data.mainCategory.name}</div>
-              </div>`;
+          category = data.mainCategory.name;
         }
+
         return `
-          <div class="swiper-slide n-wrapper-store-card">
-            <a href="${data.marketingUrl}" class="n-store-link w-inline-block">
-              ${category}
-            </a><img src="${imageUrl}" loading="lazy" alt="" class="n-store-image">
-            <div class="n-shop-name">${truncateString(data.name)}</div>
+          <div class="n-wrapper-store-card">
+            <a href="${data.marketingUrl}" class="n-store-link w-inline-block"></a>
+            <div class="n-store-image-wrapper"><img src="${imageUrl}" loading="lazy" alt="" class="n-store-image">
+              <div class="n-logo-wrapper"><img src="${data.logoImages[0].url}" loading="lazy" alt="" class="n-shop-logo"></div>
+            </div>
+            <div fs-cmsfilter-field="name" class="n-shop-name">${truncateString(data.name)}</div>
+            <div class="n-card-category-name">${category}</div>
           </div>
         `;
       },
@@ -159,32 +154,20 @@ document.addEventListener('DOMContentLoaded', function () {
         if (data.id == catIdParam) {
           activateClass = "w--redirected-checked";
         }
-        return data ? `
-          <div role="listitem" class="n-item-filters w-dyn-item">
-            <label class="w-checkbox n-checkbox-wrapper" data-cat-id="${data.id}">
-              <div class="w-checkbox-input w-checkbox-input--inputType-custom n-checkbox ${activateClass}"></div>
-              <input type="checkbox" id="checkbox-2" name="checkbox-2" data-name="Checkbox 2" style="opacity:0;position:absolute;z-index:-1">
-              <span class="n-checkbox-label-categories w-form-label" for="checkbox-2">
-                ${data.name}
-              </span>
-            </label>
-          </div>
-        ` : null;
+        return data ? `<div role="listitem" class="n-item-filters w-dyn-item">
+          <label class="w-checkbox n-checkbox-wrapper" data-cat-id="${data.id}">
+          <div class="w-checkbox-input w-checkbox-input--inputType-custom n-checkbox ${activateClass}"></div>
+          <input type="checkbox" name="checkbox-2" data-name="Checkbox 2" style="opacity:0;position:absolute;z-index:-1">
+          <span class="n-checkbox-label-categories w-form-label" for="checkbox-2">
+            ${data.name}
+          </span>
+        </label>
+      </div>` : null;
       },
       'getSubCategory': function(data) {
-        var index = data.index
         var data = data.data;
         return `
-          <a data-w-tab="${data.name}"
-            class="n-tab-subcategories w-inline-block w-tab-link"
-            tabindex="-1"
-            id="w-tabs-${index}-data-w-tab-${index}"
-            href="#w-tabs-${index}-data-w-pane-${index}"
-            role="tab" aria-controls="w-tabs-${index}-data-w-pane-${index}"
-            aria-selected="false"
-            data-cat-id="${data.id}">
-            <div>${data.name}</div>
-          </a>
+          <div class="n-tab-text n-hidden-on-devices" data-cat-id="${data.id}">${data.name}</div>
         `;
       },
       'getCategoryMenu': function(data) {
@@ -257,8 +240,6 @@ document.addEventListener('DOMContentLoaded', function () {
         ` : '';
       },
       'getCategory': function (data) {
-        window.categories = data;
-        $('.n-wrapper-collection-filters-copy .w-dyn-empty').first().hide();
         return '';
       },
       'getCategoryMenu': function (data) {
@@ -341,27 +322,38 @@ document.addEventListener('DOMContentLoaded', function () {
     html += (config.after && getAfter(config.after, data) !== null) ? getAfter(config.after, data) : '';
     $(config.selector).first().html('');
     $(config.selector).first().html(html);
+    return data.length;
   }
 
-  async function createSlider(config) {
+  async function createSlider(config, data) {
     var html = "";
-    try {
-      var data = await anydayAPI(
-        config.endpoint,
-        config.method,
-        config.queryParameters,
-        config.version,
-        config.structure
-      );
-    } catch (e) {
-      console.log('Error occured while getting response from '+config.endpoint);
-      console.log(e);
-      return;
+    if (data === undefined) {
+      try {
+        var data = await anydayAPI(
+          config.endpoint,
+          config.method,
+          config.queryParameters,
+          config.version,
+          config.structure
+        );
+      } catch (e) {
+        console.log('Error occured while getting response from ' + config.endpoint);
+        console.log(e);
+        return;
+      }
     }
     if (data.length) {
-      var elements = $('.swiper-wrapper .swiper-slide');
-      elements.each(function(index) {
-        $(this).html(getTemplate(config.templateGetter, data[index]));
+      var elements = $('.n-shops .swiper-wrapper .swiper-slide');
+      var randomIndex = [];
+      var recLimit = Math.min(data.length, elements.length);
+      while(randomIndex.length < recLimit){
+          var r = Math.floor(Math.random() * data.length);
+          if(randomIndex.indexOf(r) === -1) randomIndex.push(r);
+      };
+      var randomData = randomIndex.map(index => data[index]);
+      elements.each(function (index) {
+        $(this).html('');
+        $(this).html(getTemplate(config.templateGetter, randomData[index]));
       });
     }
   }
@@ -383,16 +375,16 @@ document.addEventListener('DOMContentLoaded', function () {
     }
     var response = await $.get(BASE_URL + path.trim() + queryString);
     if (setPage) {
-      $('.w-pagination-previous.previous-button, .w-pagination-next.load-more-button').removeClass('disabled').removeData('page');
+      $('.n-pagination .previous-button, .n-pagination .load-more-button').removeClass('disabled').removeData('page');
       if (response.data.totalPages == 1) {
-        $('.w-pagination-previous.previous-button, .w-pagination-next.load-more-button').addClass('disabled');
+        $('.n-pagination .previous-button, .n-pagination .load-more-button').addClass('disabled');
       } else if(response.data.page === response.data.totalPages) {
-        $('.w-pagination-next.load-more-button').addClass('disabled');
-        $('.w-pagination-previous.previous-button').attr('data-page', response.data.page - 1);
+        $('.n-pagination .load-more-button').addClass('disabled');
+        $('.n-pagination .previous-button').attr('data-page', response.data.page - 1);
       } else {
         if (response.data.page === 1) {
-          $('.w-pagination-previous.previous-button').addClass('disabled');
-          $('.w-pagination-next.load-more-button').attr('data-page', response.data.page + 1);
+          $('.n-pagination .previous-button').addClass('disabled');
+          $('.n-pagination .load-more-button').attr('data-page', response.data.page + 1);
         }
       }
     }
@@ -420,8 +412,8 @@ document.addEventListener('DOMContentLoaded', function () {
     for (let i = 0; i < sub.length; i++) {
       html += getTemplate('getSubCategory', { data: sub[i], index: i });
     }
-    $('.tabs-menu.w-tab-menu').html(html)
-    $('.tabs.w-tabs').show();
+    $('.n-subcategories-wrapper-div').html(html)
+    $('.n-subcategories-wrapper-div').show();
   }
 
   function escapeHtml(unsafe)
@@ -467,19 +459,23 @@ document.addEventListener('DOMContentLoaded', function () {
     }).join('');
   }
 
-  $('.previous-button:not(.disabled)').click(function () {
+  $('.previous-button:not(.disabled)').click(function (e) {
+    e.preventDefault();
     createElements(collectShopParameter({Page: $(this).data('page')}));
   });
-  $('.load-more-button:not(.disabled)').click(function () {
+  
+  $('.load-more-button:not(.disabled)').click(function (e) {
+    e.preventDefault();
     createElements(collectShopParameter({Page: $(this).data('page')}));
   });
 
   $('body').on('click', '.n-item-filters', function (event) {
-    if (!$('.n-item-filters').hasClass('n-item-filters'))
+    event.stopPropagation();
+    if (!$(this).hasClass('n-item-filters'))
       return;
     var catArray = [];
-    $('.n-list-filters-emp-copy .w-checkbox-input').removeClass('w--redirected-checked');
-    if (!$(this).find("div").hasClass('w--redirected-checked'))
+    $('.n-list-filters-emp-copy').removeClass('w--redirected-checked');
+    if (!$(this).find("div.w-checkbox-input").hasClass('w--redirected-checked'))
       catArray.push($(this).children().data('cat-id'));
     displaySubcategory(catArray);
     if(catArray.length)
@@ -487,7 +483,7 @@ document.addEventListener('DOMContentLoaded', function () {
     $('.n-search-wrapper .n-search-input').val('');
   });
 
-  $('body').on('click', '.n-tab-subcategories', function (event) {
+  $('body').on('click', '.n-subcategories-wrapper-div .n-tab-text', function (event) {
     $('.n-tab-subcategories').removeClass('w--current');
     $(this).addClass('w--current');
     var id = $(this).data('cat-id');
@@ -499,7 +495,16 @@ document.addEventListener('DOMContentLoaded', function () {
     $('.n-list-filters-emp-copy .w--redirected-checked').each(function () {
       catArray.push($(this).closest("label").data('cat-id'));
     });
-    createElements({ ...config.allShops, queryParameters: { ...config.allShops.queryParameters, CategoryIds: catArray, Search: escapeHtml($('.n-search-input.w-input').val()) } });
+    createElements({ ...config.allShops, queryParameters: { ...config.allShops.queryParameters, CategoryIds: catArray, Search: escapeHtml($('.n-search-input.w-input').val()) } })
+      .then(count => {
+        if (!count) {
+          $('.n-search-error-wrapper').show();
+          $('.n-pagination').hide();
+        } else {
+          $('.n-search-error-wrapper').hide();
+          $('.n-pagination').show();
+        }
+      });
   });
 
   function collectShopParameter(param = {}) {
@@ -537,7 +542,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
   
   $('.n-search-error-wrapper').hide();
-  $('.tabs.w-tabs').hide();
+  $('.n-subcategories-wrapper-div').hide();
   $('.n-clear-search-link').hide();
 
   if($('.n-section.shops .n-shops-wrapper .n-shops-sorting').length) {
@@ -547,7 +552,13 @@ document.addEventListener('DOMContentLoaded', function () {
       createElements(config.allShops);
     }
     createElements(config.categories);
-    createSlider(config.featuredShops);
+    var storageFeatured = window.localStorage.getItem('featured');
+    if (storageFeatured && JSON.parse(storageFeatured).expiry > Date.now()) {
+      createSlider(config.featuredShops, JSON.parse(storageFeatured).shops);
+    } else {
+      window.localStorage.removeItem('featured');
+      createSlider(config.featuredShops);
+    }
   }
   var storageCategory = window.localStorage.getItem('category');
   if (storageCategory && JSON.parse(storageCategory).expiry > Date.now()) {
@@ -573,16 +584,17 @@ document.addEventListener('DOMContentLoaded', function () {
       display: 'block',
       transform: 'translate3d(0px, 0px, 0px) scale3d(1, 1, 1) rotateX(0deg) rotateY(0deg) rotateZ(0deg) skew(0deg, 0deg)',
       'transform-style': 'preserve-3d',
-      height: '100vh'
+      height: '200%',
+      overflow: 'scroll'
     });
     $(this).parent('.sibling.absolute').css({
       display: 'block',
       transform: 'translate3d(0px, 0px, 0px) scale3d(1, 1, 1) rotateX(0deg) rotateY(0deg) rotateZ(0deg) skew(0deg, 0deg)',
       'transform-style': 'preserve-3d',
-      height: '100vh',
-      overflow: 'hidden'
+      overflow: 'scroll'
     });
-    e.stopPropagation();
+    $('#w-nav-overlay-0 > nav > div.parent > div.sibling.absolute > div:nth-child(15) > div.sibling-2.absolute').next().scrollTop(0);
+    //e.stopPropagation();
   });
 
   /**
@@ -619,4 +631,23 @@ document.addEventListener('DOMContentLoaded', function () {
   $('.menu-button-3.w-nav-button').click(function () {
     $('.sibling.absolute').hide();
   });
+
+  $('.n-gradient-arrow-left .n-categories-arrow-link-block').click(function () {
+    var element = document.getElementsByClassName('n-list-filters-emp-copy')[0];
+    element.scrollBy({
+      left: -150,
+      behavior: 'smooth'
+    });
+  });
+  $('.n-gradient-arrow-right .n-categories-arrow-link-block').click(function () {
+    var element = document.getElementsByClassName('n-list-filters-emp-copy')[0];
+    element.scrollBy({
+      left: 150,
+      behavior: 'smooth'
+    });
+  });
 });
+
+
+
+
