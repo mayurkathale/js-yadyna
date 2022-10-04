@@ -240,6 +240,7 @@ document.addEventListener('DOMContentLoaded', function () {
         ` : '';
       },
       'getCategory': function (data) {
+        window.categories = data;
         return '';
       },
       'getCategoryMenu': function (data) {
@@ -477,7 +478,7 @@ document.addEventListener('DOMContentLoaded', function () {
     $('div.w-checkbox-input').removeClass('w--redirected-checked');
     if (!$(this).find("div.w-checkbox-input").hasClass('w--redirected-checked'))
       catArray.push($(this).children().data('cat-id'));
-    displaySubcategory(catArray);
+    //displaySubcategory(catArray);
     if(catArray.length)
       createElements({ ...config.allShops, queryParameters: { ...config.allShops.queryParameters, categoryIds: catArray } });
     $('.n-search-wrapper .n-search-input').val('');
