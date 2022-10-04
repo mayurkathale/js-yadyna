@@ -589,6 +589,7 @@ document.addEventListener('DOMContentLoaded', function () {
   if($('.n-section.shops .n-shops-wrapper .n-shops-sorting').length) {
     if (catIdParam) {
       createElements({ ...config.allShops, queryParameters: { ...config.allShops.queryParameters, CategoryIds: catIdParam } });
+      $('.n-shops .n-featured-shops-wrapper:first').hide();
     } else {
       createElements(config.allShops);
     }
