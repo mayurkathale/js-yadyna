@@ -43,7 +43,21 @@ document.addEventListener('DOMContentLoaded', function () {
       setPage: true
     },
     featuredShops: {
-      selector: '.n-featured-shops-wrapper .swiper-wrapper',
+      selector: '.n-shops .n-featured-shops-wrapper .swiper-wrapper .swiper-slide',
+      templateGetter: 'getFeaturedShop',
+      endpoint: 'shops',
+      method: 'GET',
+      queryParameters: {
+        PageSize: 50,
+        Language: 'da',
+        Featured: true,
+        display: true
+      },
+      version: 'v2',
+      structure: 'data.result'
+    },
+    featuredShopsError: {
+      selector: '.n-search-error-wrapper .slider-search-error .swiper-wrapper .swiper-slide',
       templateGetter: 'getFeaturedShop',
       endpoint: 'shops',
       method: 'GET',
@@ -113,12 +127,17 @@ document.addEventListener('DOMContentLoaded', function () {
         if (data.mainCategory) {
           category = data.mainCategory.name;
         }
-        
+
+        var logoImageUrl = "https://uploads-ssl.webflow.com/630f0a12999419c9747bd320/63328cd7b24127bb78ef71c2_Frame%20631786.svg";
+        if (data.logoImages.length) {
+          logoImageUrl = data.logoImages[0].url;
+        }
+
         return `
         <div class="n-wrapper-store-card">
           <a href="${data.marketingUrl}" class="n-store-link w-inline-block"></a>
           <div class="n-store-image-wrapper"><img src="${imageUrl}" loading="lazy" alt="" class="n-store-image">
-            <div class="n-logo-wrapper"><img src="${data.logoImages[0].url}" loading="lazy" alt="" class="n-shop-logo"></div>
+            <div class="n-logo-wrapper"><img src="${logoImageUrl}" loading="lazy" alt="" class="n-shop-logo"></div>
           </div>
           <div fs-cmsfilter-field="name" class="n-shop-name">${truncateString(data.name)}</div>
           <div class="n-card-category-name">${category}</div>
@@ -344,7 +363,7 @@ document.addEventListener('DOMContentLoaded', function () {
       }
     }
     if (data.length) {
-      var elements = $('.n-shops .swiper-wrapper .swiper-slide');
+      var elements = $(config.selector);
       var randomIndex = [];
       var recLimit = Math.min(data.length, elements.length);
       while(randomIndex.length < recLimit){
@@ -360,7 +379,7 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   async function anydayAPI(path, method = "GET", data, version, structure, setPage) {
-    const BASE_URL = "https://anyday-acceptance.yadyna.xyz/api/"+version+"/internal/";
+    const BASE_URL = "https://my.anyday.io/api/"+version+"/internal/";
     queryString = "";
     if (method === "GET" && data !== undefined) {
       var queryString = Object.keys(data).map(function (key) {
@@ -386,6 +405,9 @@ document.addEventListener('DOMContentLoaded', function () {
         if (response.data.page === 1) {
           $('.n-pagination .previous-button').addClass('disabled');
           $('.n-pagination .load-more-button').attr('data-page', response.data.page + 1);
+        } else {
+          $('.n-pagination .load-more-button').attr('data-page', response.data.page + 1);
+          $('.n-pagination .previous-button').attr('data-page', response.data.page - 1);
         }
       }
     }
@@ -415,6 +437,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
     $('.n-subcategories-wrapper-div').html(html)
     $('.n-subcategories-wrapper-div').show();
+    $('.n-subcategories-wrapper-div .n-tab-text').show()
   }
 
   function escapeHtml(unsafe)
@@ -499,9 +522,11 @@ document.addEventListener('DOMContentLoaded', function () {
     createElements({ ...config.allShops, queryParameters: { ...config.allShops.queryParameters, CategoryIds: catArray, Search: escapeHtml($('.n-search-input.w-input').val()) } })
       .then(count => {
         if (!count) {
+          $('.n-shops .n-featured-shops-wrapper').hide();
           $('.n-search-error-wrapper').show();
           $('.n-pagination').hide();
         } else {
+          $('.n-shops .n-featured-shops-wrapper').show();
           $('.n-search-error-wrapper').hide();
           $('.n-pagination').show();
         }
@@ -552,13 +577,15 @@ document.addEventListener('DOMContentLoaded', function () {
     } else {
       createElements(config.allShops);
     }
-    createElements(config.categories);
+    createElements(config.categories).then(count => $('.n-item-filters').show());
     var storageFeatured = window.localStorage.getItem('featured');
     if (storageFeatured && JSON.parse(storageFeatured).expiry > Date.now()) {
       createSlider(config.featuredShops, JSON.parse(storageFeatured).shops);
+      createSlider(config.featuredShopsError, JSON.parse(storageFeatured).shops);
     } else {
       window.localStorage.removeItem('featured');
       createSlider(config.featuredShops);
+      createSlider(config.featuredShopsError);
     }
   }
   var storageCategory = window.localStorage.getItem('category');
