@@ -471,7 +471,7 @@ document.addEventListener('DOMContentLoaded', function () {
           <div class="n-mm-menu-link">${cat.name}</div>
         </div>
         <div style="display: none; transform: translate3d(100vw, 0px, 0px) scale3d(1, 1, 1) rotateX(0deg) rotateY(0deg) rotateZ(0deg) skew(0deg, 0deg); transform-style: preserve-3d;" class="sibling-2 absolute">
-          <div data-w-id="${cat.id}" class="n-mm-menu-header"><img src="images/Icon-39.svg" loading="lazy" alt="" class="n-mm-back">
+          <div data-w-id="${cat.id}" class="n-mm-menu-header"><img src="https://uploads-ssl.webflow.com/630f0a12999419c9747bd320/632833cd94be2a75c049ba1d_Icon%20(39).svg" loading="lazy" alt="" class="n-mm-back">
             <div class="n-mm-header-link">Back to categories</div>
           </div>
           <div class="n-mm-menu-item-wrapper">
@@ -649,15 +649,17 @@ document.addEventListener('DOMContentLoaded', function () {
       'transform-style': 'preserve-3d',
       height: '200%',
       overflow: 'scroll'
+    }).animate({
+      scrollTop: 0
     });
     $(this).parent('.sibling.absolute').css({
       display: 'block',
       transform: 'translate3d(0px, 0px, 0px) scale3d(1, 1, 1) rotateX(0deg) rotateY(0deg) rotateZ(0deg) skew(0deg, 0deg)',
       'transform-style': 'preserve-3d',
       overflow: 'scroll'
+    }).animate({
+      scrollTop: 0
     });
-    $('#w-nav-overlay-0 > nav > div.parent > div.sibling.absolute > div:nth-child(15) > div.sibling-2.absolute').next().scrollTop(0);
-    //e.stopPropagation();
   });
 
   /**
