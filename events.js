@@ -83,7 +83,7 @@ document.addEventListener('DOMContentLoaded', function () {
       after: 'getCategory'
     },
     categoriesMenu: {
-      selector: '.n-menu-wrapper-categories .w-dyn-list .w-dyn-items',
+      selector: '.n-categories-grid-mega-menu',
       templateGetter: 'getCategoryMenu',
       endpoint: 'categories',
       method: 'GET',
@@ -96,7 +96,7 @@ document.addEventListener('DOMContentLoaded', function () {
       after: 'getCategoryMenu'
     },
     featuredShopsMenu: {
-      selector: '.n-menu-wrapper-featured .w-dyn-items',
+      selector: '.n-menu-wrapper-featured .n-mm-feat-store-grid',
       templateGetter: 'getFeaturedShopMenu',
       endpoint: 'shops',
       method: 'GET',
@@ -191,11 +191,8 @@ document.addEventListener('DOMContentLoaded', function () {
       },
       'getCategoryMenu': function(data) {
         return `
-          <div role="listitem" class="w-dyn-item">
-            <a href="/shop?cat-id=${data.id}" class="n-categories w-dropdown-link" tabindex="0">
-              ${data.name}
-            </a>
-          </div>`;
+          <a href="/shop?cat-id=${data.id}" class="n-categories w-dropdown-link" tabindex="0">${data.name}</a>
+        `;
       },
       'getFeaturedShopMenu': function (data) {
         if (!data) {
@@ -205,13 +202,25 @@ document.addEventListener('DOMContentLoaded', function () {
         if (data.featuredBannerImages.length) {
           imageUrl = data.featuredBannerImages[0].url
         }
+
+        var category = '';
+        if (data.mainCategory) {
+          category = `<div class="n-card-category-name">${data.mainCategory.name}</div>`;
+        }
+
+        var logoImageUrl = "https://uploads-ssl.webflow.com/630f0a12999419c9747bd320/63328cd7b24127bb78ef71c2_Frame%20631786.svg";
+        if (data.logoImages.length) {
+          logoImageUrl = data.logoImages[0].url;
+        }
+
         return `
-          <div role="listitem" class="w-dyn-item">
-            <a href="${data.url}" class="n-megamenu-fav-wrapper n-padding-vertical n-padding-xsmall w-inline-block" tabindex="0">
-              <img src="${imageUrl}" loading="lazy" alt="" class="n-fav-store-image">
-              <div class="n-categories-copy n-padding-top n-padding-xsmall">${data.name}</div>
-            </a>
-          </div>
+          <a id="w-node-ecf96125-5766-0774-c695-12f25e3a5a9f-68400413" href="${data.marketingUrl}" class="n-megamenu-fav-wrapper n-padding-vertical n-padding-xsmall w-inline-block" tabindex="0">
+            <div class="n-mm-fav-card-image-wrapper"><img src="${imageUrl}" loading="lazy" alt="" class="n-fav-store-image">
+              <div class="n-logo-wrapper-mega-menu"><img src="${logoImageUrl}" loading="lazy" alt="" class="n-shop-logo-mega-menu"></div>
+            </div>
+            <div class="n-mm-feat-store-name n-padding-top n-padding-xsmall">${data.name}</div>
+            ${category}
+          </a>
         `;
       }
     }
@@ -485,12 +494,22 @@ document.addEventListener('DOMContentLoaded', function () {
 
   $('.previous-button:not(.disabled)').click(function (e) {
     e.preventDefault();
-    createElements(collectShopParameter({Page: $(this).data('page')}));
+    createElements(collectShopParameter({ Page: $(this).data('page') }))
+      .then(function () {
+        $('html, body').animate({
+          scrollTop: $(".n-filters-shops .n-h3").offset().top - 100
+        }, 1000);
+      });
   });
   
   $('.load-more-button:not(.disabled)').click(function (e) {
     e.preventDefault();
-    createElements(collectShopParameter({Page: $(this).data('page')}));
+    createElements(collectShopParameter({ Page: $(this).data('page') }))
+      .then(function () {
+        $('html, body').animate({
+          scrollTop: $(".n-filters-shops .n-h3").offset().top - 100
+        }, 1000);
+      });
   });
 
   $('.n-filters-wrapper').unbind('click').on('click', '.n-item-filters.w-dyn-item', function (event) {
