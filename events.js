@@ -571,15 +571,15 @@ document.addEventListener('DOMContentLoaded', function () {
     }
     var response = await $.get(BASE_URL + path.trim() + queryString);
     if (setPage) {
-      $('.n-pagination .previous-button, .n-pagination .load-more-button').removeClass('disabled').removeData('page');
+      $('.n-pagination .previous-button, .n-pagination .load-more-button').removeClass('hidden').removeData('page');
       if (response.data.totalPages == 1) {
-        $('.n-pagination .previous-button, .n-pagination .load-more-button').addClass('disabled');
+        $('.n-pagination .previous-button, .n-pagination .load-more-button').addClass('hidden');
       } else if(response.data.page === response.data.totalPages) {
-        $('.n-pagination .load-more-button').addClass('disabled');
+        $('.n-pagination .load-more-button').addClass('hidden');
         $('.n-pagination .previous-button').attr('data-page', response.data.page - 1);
       } else {
         if (response.data.page === 1) {
-          $('.n-pagination .previous-button').addClass('disabled');
+          $('.n-pagination .previous-button').addClass('hidden');
           $('.n-pagination .load-more-button').attr('data-page', response.data.page + 1);
         } else {
           $('.n-pagination .load-more-button').attr('data-page', response.data.page + 1);
@@ -659,7 +659,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }).join('');
   }
 
-  $('.previous-button:not(.disabled)').click(function (e) {
+  $('.previous-button:not(.hidden)').click(function (e) {
     e.preventDefault();
     createElements(collectShopParameter({ Page: $(this).data('page') }))
       .then(function () {
@@ -669,7 +669,7 @@ document.addEventListener('DOMContentLoaded', function () {
       });
   });
   
-  $('.load-more-button:not(.disabled)').click(function (e) {
+  $('.load-more-button:not(.hidden)').click(function (e) {
     e.preventDefault();
     createElements(collectShopParameter({ Page: $(this).data('page') }))
       .then(function () {
@@ -781,7 +781,7 @@ document.addEventListener('DOMContentLoaded', function () {
       $('#w-dropdown-list-1').attr('data-sort-decending', '0');
       createElements(collectShopParameter({ Ascending: true }));
     }
-    $('.n-filters-drop.w-dropdown-toggle').click();
+    $('.n-filters-wrapper-shops .n-filters-dropdown.w-dropdown').trigger('click');
   });
 
   
