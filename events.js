@@ -27,7 +27,7 @@ document.addEventListener('DOMContentLoaded', function () {
       }
     }
   });
-  
+
   var errSectionSwiper = new Swiper(".slider-search-error .swiper", {
     slidesPerView: 1.2,
     spaceBetween: 30,
@@ -96,6 +96,30 @@ document.addEventListener('DOMContentLoaded', function () {
     on: {
       init: function() {
         $('.latest-added .swiper .swiper-wrapper').css({display: 'flex'});
+      }
+    }
+  });
+
+  var shopperFeaturedSwiper = new Swiper(".featured-shoppers .swiper", {
+    slidesPerView: 1.2,
+    spaceBetween: 30,
+    navigation: {
+      nextEl: '.w-slider-arrow-right',
+      prevEl: '.w-slider-arrow-left',
+    },
+    breakpoints: {
+      768: {
+        slidesPerView: 2.5,
+        spaceBetween: 20,
+      },
+      1024: {
+        slidesPerView: 4.5,
+        spaceBetween: 30,
+      },
+    },
+    on: {
+      init: function() {
+        $('.featured-shoppers .swiper .swiper-wrapper').css({display: 'flex'});
       }
     }
   });
@@ -173,6 +197,20 @@ document.addEventListener('DOMContentLoaded', function () {
     },
     featuredShopSwiper: {
       selector: '.swiper-box.featured-home .swiper-wrapper .swiper-slide',
+      templateGetter: 'getFeaturedShop',
+      endpoint: 'shops',
+      method: 'GET',
+      queryParameters: {
+        PageSize: 50,
+        Language: 'da',
+        Featured: true,
+        display: true
+      },
+      version: 'v2',
+      structure: 'data.result'
+    },
+    featuredShopSwiperShopper: {
+      selector: '.swiper-box.featured-shoppers .swiper-wrapper .swiper-slide',
       templateGetter: 'getFeaturedShop',
       endpoint: 'shops',
       method: 'GET',
@@ -778,6 +816,15 @@ document.addEventListener('DOMContentLoaded', function () {
       createSlider(config.featuredShopSwiper);
     createSlider(config.lastestShopSwiper);
   }
+
+  if ($('.featured-shoppers').length) {
+    var storageFeatured = window.localStorage.getItem('featured');
+    if (storageFeatured && JSON.parse(storageFeatured).expiry > Date.now())
+      createSlider(config.featuredShopSwiperShopper, JSON.parse(storageFeatured).shops);
+    else
+      createSlider(config.featuredShopSwiperShopper);
+  }
+
   var storageCategory = window.localStorage.getItem('category');
   if (storageCategory && JSON.parse(storageCategory).expiry > Date.now()) {
     createElements(config.categoriesMenu, JSON.parse(storageCategory).categories)
