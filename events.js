@@ -1,6 +1,107 @@
 document.addEventListener('DOMContentLoaded', function () {
   var url = new URL(window.location.href);
   var catIdParam = url.searchParams.get("cat-id");
+
+
+
+  var swiper = new Swiper(".n-shops .n-featured-shops-wrapper .swiper", {
+    slidesPerView: 1.2,
+    spaceBetween: 30,
+    navigation: {
+      nextEl: '.w-slider-arrow-right',
+      prevEl: '.w-slider-arrow-left',
+    },
+    breakpoints: {
+      768: {
+        slidesPerView: 2.5,
+        spaceBetween: 20,
+      },
+      1024: {
+        slidesPerView: 4.5,
+        spaceBetween: 30,
+      },
+    },
+    on: {
+      init: function() {
+        $('.n-shops .n-featured-shops-wrapper .swiper .swiper-wrapper').css({display: 'flex'});
+      }
+    }
+  });
+  
+  var errSectionSwiper = new Swiper(".slider-search-error .swiper", {
+    slidesPerView: 1.2,
+    spaceBetween: 30,
+    navigation: {
+      nextEl: '.w-slider-arrow-right',
+      prevEl: '.w-slider-arrow-left',
+    },
+    breakpoints: {
+      768: {
+        slidesPerView: 2.5,
+        spaceBetween: 20,
+      },
+      1024: {
+        slidesPerView: 4.5,
+        spaceBetween: 30,
+      },
+    },
+    on: {
+      init: function() {
+        $('.slider-search-error .swiper .swiper-wrapper').css({display: 'flex'});
+      }
+    }
+  });
+
+  var homeFeaturedSwiper = new Swiper(".featured-home .swiper", {
+    slidesPerView: 1.2,
+    spaceBetween: 30,
+    navigation: {
+      nextEl: '.w-slider-arrow-right',
+      prevEl: '.w-slider-arrow-left',
+    },
+    breakpoints: {
+      768: {
+        slidesPerView: 2.5,
+        spaceBetween: 20,
+      },
+      1024: {
+        slidesPerView: 4.5,
+        spaceBetween: 30,
+      },
+    },
+    on: {
+      init: function() {
+        $('.featured-home .swiper .swiper-wrapper').css({display: 'flex'});
+      }
+    }
+  });
+
+  var homeLatestSwiper = new Swiper(".latest-added .swiper", {
+    slidesPerView: 1.2,
+    spaceBetween: 30,
+    navigation: {
+      nextEl: '.w-slider-arrow-right',
+      prevEl: '.w-slider-arrow-left',
+    },
+    breakpoints: {
+      768: {
+        slidesPerView: 2.5,
+        spaceBetween: 20,
+      },
+      1024: {
+        slidesPerView: 4.5,
+        spaceBetween: 30,
+      },
+    },
+    on: {
+      init: function() {
+        $('.latest-added .swiper .swiper-wrapper').css({display: 'flex'});
+      }
+    }
+  });
+
+
+
   $(".btn-login").click(function () {
     console.log('login clicked!');
     window.rudderanalytics.track('Login Click');
@@ -66,6 +167,34 @@ document.addEventListener('DOMContentLoaded', function () {
         Language: 'da',
         Featured: true,
         display: true
+      },
+      version: 'v2',
+      structure: 'data.result'
+    },
+    featuredShopSwiper: {
+      selector: '.swiper-box.featured-home .swiper-wrapper .swiper-slide',
+      templateGetter: 'getFeaturedShop',
+      endpoint: 'shops',
+      method: 'GET',
+      queryParameters: {
+        PageSize: 50,
+        Language: 'da',
+        Featured: true,
+        display: true
+      },
+      version: 'v2',
+      structure: 'data.result'
+    },
+    lastestShopSwiper: {
+      selector: '.latest-added .swiper .swiper-wrapper .swiper-slide',
+      templateGetter: 'getFeaturedShop',
+      endpoint: 'shops',
+      method: 'GET',
+      queryParameters: {
+        PageSize: 50,
+        Language: 'da',
+        display: true,
+        SortBy: 'CreatedDate'
       },
       version: 'v2',
       structure: 'data.result'
@@ -559,13 +688,30 @@ document.addEventListener('DOMContentLoaded', function () {
           $('.n-shops .n-featured-shops-wrapper').hide();
           $('.n-search-error-wrapper').show();
           $('.n-pagination').hide();
+          $('html, body').animate({
+            scrollTop: $(".n-search-error-wrapper .n-search-error-text").offset().top - 100
+          }, 1000);
+          
         } else {
           $('.n-shops .n-featured-shops-wrapper').show();
           $('.n-search-error-wrapper').hide();
           $('.n-pagination').show();
+          $('html, body').animate({
+            scrollTop: $(".n-filters-shops .n-h3").offset().top - 100
+          }, 1000);
         }
       });
   });
+
+  $('.n-search-wrapper .n-search-input').keydown(function (event) { 
+    event.stopImmediatePropagation();
+    var id = event.key || event.which || event.keyCode || 0;   
+    if (id == "Enter") {
+      event.preventDefault();
+      $('.n-absolute-elements-search .n-primary-button').trigger('click');
+      return false;
+    }
+});
 
   function collectShopParameter(param = {}) {
     var shopConfig;
@@ -622,6 +768,15 @@ document.addEventListener('DOMContentLoaded', function () {
       createSlider(config.featuredShops);
       createSlider(config.featuredShopsError);
     }
+  }
+
+  if ($('.swiper-box.featured-home').length) {
+    var storageFeatured = window.localStorage.getItem('featured');
+    if (storageFeatured && JSON.parse(storageFeatured).expiry > Date.now())
+      createSlider(config.featuredShopSwiper, JSON.parse(storageFeatured).shops);
+    else
+      createSlider(config.featuredShopSwiper);
+    createSlider(config.lastestShopSwiper);
   }
   var storageCategory = window.localStorage.getItem('category');
   if (storageCategory && JSON.parse(storageCategory).expiry > Date.now()) {
