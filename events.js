@@ -1,8 +1,7 @@
 document.addEventListener('DOMContentLoaded', function () {
   var url = new URL(window.location.href);
   var catIdParam = url.searchParams.get("cat-id");
-
-
+  var language = 'da';
 
   var swiper = new Swiper(".n-shops .n-featured-shops-wrapper .swiper", {
     slidesPerView: 1.2,
@@ -159,7 +158,7 @@ document.addEventListener('DOMContentLoaded', function () {
       method: 'GET',
       queryParameters: {
         PageSize: 24,
-        Language: 'da',
+        Language: language,
         display: true
       },
       version: 'v2',
@@ -174,7 +173,7 @@ document.addEventListener('DOMContentLoaded', function () {
       method: 'GET',
       queryParameters: {
         PageSize: 50,
-        Language: 'da',
+        Language: language,
         Featured: true,
         display: true
       },
@@ -188,7 +187,7 @@ document.addEventListener('DOMContentLoaded', function () {
       method: 'GET',
       queryParameters: {
         PageSize: 50,
-        Language: 'da',
+        Language: language,
         Featured: true,
         display: true
       },
@@ -202,7 +201,7 @@ document.addEventListener('DOMContentLoaded', function () {
       method: 'GET',
       queryParameters: {
         PageSize: 50,
-        Language: 'da',
+        Language: language,
         Featured: true,
         display: true
       },
@@ -216,7 +215,7 @@ document.addEventListener('DOMContentLoaded', function () {
       method: 'GET',
       queryParameters: {
         PageSize: 50,
-        Language: 'da',
+        Language: language,
         Featured: true,
         display: true
       },
@@ -230,7 +229,7 @@ document.addEventListener('DOMContentLoaded', function () {
       method: 'GET',
       queryParameters: {
         PageSize: 50,
-        Language: 'da',
+        Language: language,
         display: true,
         SortBy: 'CreatedDate'
       },
@@ -243,7 +242,7 @@ document.addEventListener('DOMContentLoaded', function () {
       endpoint: 'categories',
       method: 'GET',
       queryParameters: {
-        Language: 'da',
+        Language: language,
       },
       version: 'v1',
       structure: 'data',
@@ -255,7 +254,7 @@ document.addEventListener('DOMContentLoaded', function () {
       endpoint: 'categories',
       method: 'GET',
       queryParameters: {
-        Language: 'da',
+        Language: language,
       },
       version: 'v1',
       structure: 'data',
@@ -269,7 +268,7 @@ document.addEventListener('DOMContentLoaded', function () {
       method: 'GET',
       queryParameters: {
         PageSize: 50,
-        Language: 'da',
+        Language: language,
         Featured: true
       },
       limit: 6,
@@ -635,7 +634,7 @@ document.addEventListener('DOMContentLoaded', function () {
     return data.map(cat => {
       var html = `<div class="n-category-name">
         <div data-w-id="${cat.id}" class="sibling">
-          <div class="n-mm-menu-link">${cat.name}</div>
+          <div class="n-mm-menu-link"><a href="/shop?cat-id=${cat.id}">${cat.name}</a></div>
         </div>
         <div style="display: none; transform: translate3d(100vw, 0px, 0px) scale3d(1, 1, 1) rotateX(0deg) rotateY(0deg) rotateZ(0deg) skew(0deg, 0deg); transform-style: preserve-3d;" class="sibling-2 absolute">
           <div data-w-id="${cat.id}" class="n-mm-menu-header"><img src="https://uploads-ssl.webflow.com/630f0a12999419c9747bd320/632833cd94be2a75c049ba1d_Icon%20(39).svg" loading="lazy" alt="" class="n-mm-back">
@@ -692,14 +691,14 @@ document.addEventListener('DOMContentLoaded', function () {
     if (!$(this).find("div.w-checkbox-input").hasClass('w--redirected-checked')) {
       $('div.w-checkbox-input').removeClass('w--redirected-checked');
       catArray.push($(this).children().data('cat-id'));
-      displaySubcategory(catArray);
+      //displaySubcategory(catArray);
       if (catArray.length) {
         createElements({ ...config.allShops, queryParameters: { ...config.allShops.queryParameters, categoryIds: catArray } });
         $('.n-shops .n-featured-shops-wrapper:first').hide();
       }
     } else {
       $('div.w-checkbox-input').removeClass('w--redirected-checked');
-      displaySubcategory(catArray);
+      //displaySubcategory(catArray);
       createElements({ ...config.allShops });
       $('.n-shops .n-featured-shops-wrapper:first').show();
       return false;
@@ -845,23 +844,23 @@ document.addEventListener('DOMContentLoaded', function () {
    * Category clicked -> Show subcatgory list -> restrict Category list height to 100vh and overflow hidden
    */
   $('body').on('click', '.n-category-name', function (e) {
-    $(this).children('.sibling').next().css({
-      display: 'block',
-      transform: 'translate3d(0px, 0px, 0px) scale3d(1, 1, 1) rotateX(0deg) rotateY(0deg) rotateZ(0deg) skew(0deg, 0deg)',
-      'transform-style': 'preserve-3d',
-      height: '200%',
-      overflow: 'scroll'
-    }).animate({
-      scrollTop: 0
-    });
-    $(this).parent('.sibling.absolute').css({
-      display: 'block',
-      transform: 'translate3d(0px, 0px, 0px) scale3d(1, 1, 1) rotateX(0deg) rotateY(0deg) rotateZ(0deg) skew(0deg, 0deg)',
-      'transform-style': 'preserve-3d',
-      overflow: 'scroll'
-    }).animate({
-      scrollTop: 0
-    });
+    // $(this).children('.sibling').next().css({
+    //   display: 'block',
+    //   transform: 'translate3d(0px, 0px, 0px) scale3d(1, 1, 1) rotateX(0deg) rotateY(0deg) rotateZ(0deg) skew(0deg, 0deg)',
+    //   'transform-style': 'preserve-3d',
+    //   height: '200%',
+    //   overflow: 'scroll'
+    // }).animate({
+    //   scrollTop: 0
+    // });
+    // $(this).parent('.sibling.absolute').css({
+    //   display: 'block',
+    //   transform: 'translate3d(0px, 0px, 0px) scale3d(1, 1, 1) rotateX(0deg) rotateY(0deg) rotateZ(0deg) skew(0deg, 0deg)',
+    //   'transform-style': 'preserve-3d',
+    //   overflow: 'scroll'
+    // }).animate({
+    //   scrollTop: 0
+    // });
   });
 
   /**
