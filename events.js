@@ -435,6 +435,9 @@ document.addEventListener('DOMContentLoaded', function () {
       },
       'getCategory': function (data) {
         window.categories = data;
+        var selectedCat = data.filter(cat => cat.id == catIdParam);
+        if(selectedCat.length)
+          $('.n-filters-shops .n-h3').html(selectedCat[0].name);
         return '';
       },
       'getCategoryMenu': function (data) {
@@ -701,8 +704,10 @@ document.addEventListener('DOMContentLoaded', function () {
       //displaySubcategory(catArray);
       createElements({ ...config.allShops });
       $('.n-shops .n-featured-shops-wrapper:first').show();
+      $('.n-filters-shops .n-h3').html('All');
       return false;
     }
+    $('.n-filters-shops .n-h3').html($(this).find('.n-checkbox-label-categories').html());
     $(this).find('.w-checkbox-input').addClass('w--redirected-checked');
     $('.n-search-wrapper .n-search-input').val('');
   });
@@ -844,15 +849,15 @@ document.addEventListener('DOMContentLoaded', function () {
    * Category clicked -> Show subcatgory list -> restrict Category list height to 100vh and overflow hidden
    */
   $('body').on('click', '.n-category-name', function (e) {
-    // $(this).children('.sibling').next().css({
-    //   display: 'block',
-    //   transform: 'translate3d(0px, 0px, 0px) scale3d(1, 1, 1) rotateX(0deg) rotateY(0deg) rotateZ(0deg) skew(0deg, 0deg)',
-    //   'transform-style': 'preserve-3d',
-    //   height: '200%',
-    //   overflow: 'scroll'
-    // }).animate({
-    //   scrollTop: 0
-    // });
+    $(this).children('.sibling').next().css({
+      display: 'block',
+      transform: 'translate3d(0px, 0px, 0px) scale3d(1, 1, 1) rotateX(0deg) rotateY(0deg) rotateZ(0deg) skew(0deg, 0deg)',
+      'transform-style': 'preserve-3d',
+      height: '100vh',
+      overflow: 'scroll'
+    }).animate({
+      scrollTop: 0
+    });
     // $(this).parent('.sibling.absolute').css({
     //   display: 'block',
     //   transform: 'translate3d(0px, 0px, 0px) scale3d(1, 1, 1) rotateX(0deg) rotateY(0deg) rotateZ(0deg) skew(0deg, 0deg)',
