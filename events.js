@@ -634,7 +634,10 @@ document.addEventListener('DOMContentLoaded', function () {
       : string;
 
   function createCategoryMobileMenu(data) {
-    return data.map(cat => {
+    return `<div class="n-category-name">
+    <div class="sibling">
+      <div class="n-mm-menu-link"><a href="/shop">All</a></div>
+    </div>` + data.map(cat => {
       var html = `<div class="n-category-name">
         <div data-w-id="${cat.id}" class="sibling">
           <div class="n-mm-menu-link"><a href="/shop?cat-id=${cat.id}">${cat.name}</a></div>
