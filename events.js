@@ -849,15 +849,15 @@ document.addEventListener('DOMContentLoaded', function () {
    * Category clicked -> Show subcatgory list -> restrict Category list height to 100vh and overflow hidden
    */
   $('body').on('click', '.n-category-name', function (e) {
-    $(this).children('.sibling').next().css({
-      display: 'block',
-      transform: 'translate3d(0px, 0px, 0px) scale3d(1, 1, 1) rotateX(0deg) rotateY(0deg) rotateZ(0deg) skew(0deg, 0deg)',
-      'transform-style': 'preserve-3d',
-      height: '100vh',
-      overflow: 'scroll'
-    }).animate({
-      scrollTop: 0
-    });
+    // $(this).children('.sibling').next().css({
+    //   display: 'block',
+    //   transform: 'translate3d(0px, 0px, 0px) scale3d(1, 1, 1) rotateX(0deg) rotateY(0deg) rotateZ(0deg) skew(0deg, 0deg)',
+    //   'transform-style': 'preserve-3d',
+    //   height: '100vh',
+    //   overflow: 'scroll'
+    // }).animate({
+    //   scrollTop: 0
+    // });
     // $(this).parent('.sibling.absolute').css({
     //   display: 'block',
     //   transform: 'translate3d(0px, 0px, 0px) scale3d(1, 1, 1) rotateX(0deg) rotateY(0deg) rotateZ(0deg) skew(0deg, 0deg)',
