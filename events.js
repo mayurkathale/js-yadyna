@@ -786,11 +786,11 @@ document.addEventListener('DOMContentLoaded', function () {
 
   $('.w-dropdown-link').click(function () {
     if ($(this).text() === "Z-A") {
-      createElements(collectShopParameter({ Ascending: false }));
       $('#w-dropdown-list-1').attr('data-sort-decending', '1');
+      createElements(collectShopParameter({ Ascending: false }));
     } else if($(this).text() === "Latest Added") {
-      createElements(collectShopParameter({ SortBy: 'CreatedDate', Ascending: false }));
       $('#w-dropdown-list-1').attr('data-sort-decending', '2');
+      createElements(collectShopParameter({ SortBy: 'CreatedDate', Ascending: false }));
     } else {
       $('#w-dropdown-list-1').attr('data-sort-decending', '0');
       createElements(collectShopParameter({ Ascending: true }));
