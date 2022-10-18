@@ -302,8 +302,8 @@ document.addEventListener('DOMContentLoaded', function () {
         return `
         <div class="n-wrapper-store-card">
           <a href="${data.marketingUrl}" class="n-store-link w-inline-block"></a>
-          <div class="n-store-image-wrapper"><img src="${imageUrl}" loading="lazy" alt="" class="n-store-image">
-            <div class="n-logo-wrapper"><img src="${logoImageUrl}" loading="lazy" alt="" class="n-shop-logo"></div>
+          <div class="n-store-image-wrapper"><img src="${imageUrl}" alt="" class="n-store-image">
+            <div class="n-logo-wrapper"><img src="${logoImageUrl}" alt="" class="n-shop-logo"></div>
           </div>
           <div fs-cmsfilter-field="name" class="n-shop-name">${truncateString(data.name)}</div>
           <div class="n-card-category-name">${category}</div>
@@ -326,8 +326,8 @@ document.addEventListener('DOMContentLoaded', function () {
         return `
           <div class="n-wrapper-store-card">
             <a href="${data.marketingUrl}" class="n-store-link w-inline-block"></a>
-            <div class="n-store-image-wrapper"><img src="${imageUrl}" loading="lazy" alt="" class="n-store-image">
-              <div class="n-logo-wrapper"><img src="${data.logoImages[0].url}" loading="lazy" alt="" class="n-shop-logo"></div>
+            <div class="n-store-image-wrapper"><img src="${imageUrl}" alt="" class="n-store-image">
+              <div class="n-logo-wrapper"><img src="${data.logoImages[0].url}" alt="" class="n-shop-logo"></div>
             </div>
             <div fs-cmsfilter-field="name" class="n-shop-name">${truncateString(data.name)}</div>
             <div class="n-card-category-name">${category}</div>
@@ -424,11 +424,11 @@ document.addEventListener('DOMContentLoaded', function () {
         $(window).trigger('resize');
         return (data && data.length) ? `
             <div class="left-arrow w-slider-arrow-left" role="button" tabindex="0" aria-controls="w-slider-mask-0" aria-label="previous slide">
-              <div class="n-arrow-div"><img src="https://uploads-ssl.webflow.com/630f0a12999419c9747bd320/632a8e5b94c9d18695b01993_Vector%20119.svg" loading="lazy" alt=""></div>
+              <div class="n-arrow-div"><img src="https://uploads-ssl.webflow.com/630f0a12999419c9747bd320/632a8e5b94c9d18695b01993_Vector%20119.svg" alt=""></div>
               <div class="icon-2 hidden w-icon-slider-left"></div>
             </div>
             <div class="right-arrow w-slider-arrow-right" role="button" tabindex="0" aria-controls="w-slider-mask-0" aria-label="next slide">
-              <div class="n-arrow-div"><img src="https://uploads-ssl.webflow.com/630f0a12999419c9747bd320/632a90cd32d85fda4a8b9b2f_Vector%20120.svg" loading="lazy" alt=""></div>
+              <div class="n-arrow-div"><img src="https://uploads-ssl.webflow.com/630f0a12999419c9747bd320/632a90cd32d85fda4a8b9b2f_Vector%20120.svg" alt=""></div>
               <div class="icon-2 hidden w-icon-slider-right"></div>
             </div>
         ` : '';
@@ -450,7 +450,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
         $('.parent .sibling.absolute .n-category-name').remove();
         $('.parent .sibling.absolute').append(createCategoryMobileMenu(data));
-        $('.n-filters-wrapper.n-disappear-on-desktop .sibling.absolute .n-category-name').remove();
+        $('.n-filters-wrapper.n-disappear-on-desktop .sibling.absolute .n-category-name .n-category-name').remove();
         $('.n-filters-wrapper.n-disappear-on-desktop .sibling.absolute').append(createCategoryMobileMenu(data));
         if (data.length)
           $('.n-menu-wrapper-categories .w-dyn-empty').first().hide();
