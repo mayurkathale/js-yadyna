@@ -13,7 +13,9 @@ var config = {};
       queryParameters: {
         PageSize: 24,
         Language: language,
-        display: true
+        display: true,
+        SortBy: 'CreatedDate',
+        Ascending: false
       },
       version: 'v2',
       structure: 'data.result',
@@ -85,7 +87,8 @@ var config = {};
         PageSize: 50,
         Language: language,
         display: true,
-        SortBy: 'CreatedDate'
+        SortBy: 'CreatedDate',
+        Ascending: false
       },
       version: 'v2',
       structure: 'data.result'
@@ -141,19 +144,19 @@ var config = {};
       createElements(config.allShops);
     }
     createElements(config.categories).then(count => $('.n-item-filters').show());
-    var storageFeatured = window.localStorage.getItem('featured');
+    var storageFeatured = window.localStorage.getItem('featured'+language);
     if (storageFeatured && JSON.parse(storageFeatured).expiry > Date.now()) {
       createSlider(config.featuredShops, JSON.parse(storageFeatured).shops);
       createSlider(config.featuredShopsError, JSON.parse(storageFeatured).shops);
     } else {
-      window.localStorage.removeItem('featured');
+      window.localStorage.removeItem('featured'+language);
       createSlider(config.featuredShops);
       createSlider(config.featuredShopsError);
     }
   }
 
   if ($('.swiper-box.featured-home').length) {
-    var storageFeatured = window.localStorage.getItem('featured');
+    var storageFeatured = window.localStorage.getItem('featured'+language);
     if (storageFeatured && JSON.parse(storageFeatured).expiry > Date.now())
       createSlider(config.featuredShopSwiper, JSON.parse(storageFeatured).shops);
     else
@@ -162,25 +165,25 @@ var config = {};
   }
 
   if ($('.featured-shoppers').length) {
-    var storageFeatured = window.localStorage.getItem('featured');
+    var storageFeatured = window.localStorage.getItem('featured'+language);
     if (storageFeatured && JSON.parse(storageFeatured).expiry > Date.now())
       createSlider(config.featuredShopSwiperShopper, JSON.parse(storageFeatured).shops);
     else
       createSlider(config.featuredShopSwiperShopper);
   }
 
-  var storageCategory = window.localStorage.getItem('category');
+  var storageCategory = window.localStorage.getItem('category'+language);
   if (storageCategory && JSON.parse(storageCategory).expiry > Date.now()) {
     createElements(config.categoriesMenu, JSON.parse(storageCategory).categories)
   } else {
-    window.localStorage.removeItem('category');
+    window.localStorage.removeItem('category'+language);
     createElements(config.categoriesMenu);
   }
-  var storageFeatured = window.localStorage.getItem('featured');
+  var storageFeatured = window.localStorage.getItem('featured'+language);
   if (storageFeatured && JSON.parse(storageFeatured).expiry > Date.now()) {
     createElements(config.featuredShopsMenu, JSON.parse(storageFeatured).shops)
   } else {
-    window.localStorage.removeItem('featured');
+    window.localStorage.removeItem('featured'+language);
     createElements(config.featuredShopsMenu);
   }
 // });
@@ -347,12 +350,12 @@ function getAfter(name, data) {
       return '';
     },
     'getCategoryMenu': function (data) {
-      var localCategory = window.localStorage.getItem('category');
+      var localCategory = window.localStorage.getItem('category'+language);
       if (localCategory === null) {
         const today = new Date();
         var tomorrow = new Date();
         tomorrow.setDate(today.getDate() + 1);
-        window.localStorage.setItem('category', JSON.stringify({ categories: data, expiry: tomorrow.getTime()}));
+        window.localStorage.setItem('category'+language, JSON.stringify({ categories: data, expiry: tomorrow.getTime()}));
       }
       $('.parent .sibling.absolute .n-category-name').remove();
       $('.parent .sibling.absolute').append(createCategoryMobileMenu(data));
@@ -365,12 +368,12 @@ function getAfter(name, data) {
       return '';
     },
     'getFeaturedShopMenu': function (data) {
-      var localFeatured = window.localStorage.getItem('featured');
+      var localFeatured = window.localStorage.getItem('featured'+language);
       if (localFeatured === null) {
         const today = new Date();
         var tomorrow = new Date();
         tomorrow.setDate(today.getDate() + 1);
-        window.localStorage.setItem('featured', JSON.stringify({ shops: data, expiry: tomorrow.getTime()}));
+        window.localStorage.setItem('featured'+language, JSON.stringify({ shops: data, expiry: tomorrow.getTime()}));
       }
       if (data.length)
         $('.n-menu-wrapper-featured .w-dyn-empty').hide();
