@@ -779,13 +779,13 @@ document.addEventListener('DOMContentLoaded', function () {
       //displaySubcategory(catArray);
       if (catArray.length) {
         createElements({ ...config.allShops, queryParameters: { ...config.allShops.queryParameters, categoryIds: catArray } });
-        $('.n-shops .n-featured-shops-wrapper:first').hide();
+        //$('.n-shops .n-featured-shops-wrapper:first').hide();
       }
     } else {
       $('div.w-checkbox-input').removeClass('w--redirected-checked');
       //displaySubcategory(catArray);
       createElements({ ...config.allShops });
-      $('.n-shops .n-featured-shops-wrapper:first').show();
+      //$('.n-shops .n-featured-shops-wrapper:first').show();
       $('.n-filters-shops .n-h3').html('All');
       return false;
     }
