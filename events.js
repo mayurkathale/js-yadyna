@@ -1,7 +1,597 @@
+var language = 'en';
+var url = new URL(window.location.href);
+var catIdParam = url.searchParams.get("cat-id");
+var config = {};
+// Weglot.on('initialized', ()=>{
+//   var language = Weglot.getCurrentLang();
+  config = {
+    allShops: {
+      selector: '.n-featured-shops-wrapper .all-shop-list-wrapper',
+      templateGetter: 'getAllShop',
+      endpoint: 'shops',
+      method: 'GET',
+      queryParameters: {
+        PageSize: 24,
+        Language: language,
+        display: true
+      },
+      version: 'v2',
+      structure: 'data.result',
+      after: 'getAllShop',
+      setPage: true
+    },
+    featuredShops: {
+      selector: '.n-shops .n-featured-shops-wrapper .swiper-wrapper .swiper-slide',
+      templateGetter: 'getFeaturedShop',
+      endpoint: 'shops',
+      method: 'GET',
+      queryParameters: {
+        PageSize: 50,
+        Language: language,
+        Featured: true,
+        display: true
+      },
+      version: 'v2',
+      structure: 'data.result'
+    },
+    featuredShopsError: {
+      selector: '.n-search-error-wrapper .slider-search-error .swiper-wrapper .swiper-slide',
+      templateGetter: 'getFeaturedShop',
+      endpoint: 'shops',
+      method: 'GET',
+      queryParameters: {
+        PageSize: 50,
+        Language: language,
+        Featured: true,
+        display: true
+      },
+      version: 'v2',
+      structure: 'data.result'
+    },
+    featuredShopSwiper: {
+      selector: '.swiper-box.featured-home .swiper-wrapper .swiper-slide',
+      templateGetter: 'getFeaturedShop',
+      endpoint: 'shops',
+      method: 'GET',
+      queryParameters: {
+        PageSize: 50,
+        Language: language,
+        Featured: true,
+        display: true
+      },
+      version: 'v2',
+      structure: 'data.result'
+    },
+    featuredShopSwiperShopper: {
+      selector: '.swiper-box.featured-shoppers .swiper-wrapper .swiper-slide',
+      templateGetter: 'getFeaturedShop',
+      endpoint: 'shops',
+      method: 'GET',
+      queryParameters: {
+        PageSize: 50,
+        Language: language,
+        Featured: true,
+        display: true
+      },
+      version: 'v2',
+      structure: 'data.result'
+    },
+    lastestShopSwiper: {
+      selector: '.latest-added .swiper .swiper-wrapper .swiper-slide',
+      templateGetter: 'getFeaturedShop',
+      endpoint: 'shops',
+      method: 'GET',
+      queryParameters: {
+        PageSize: 50,
+        Language: language,
+        display: true,
+        SortBy: 'CreatedDate'
+      },
+      version: 'v2',
+      structure: 'data.result'
+    },
+    categories: {
+      selector: '.n-checkbox-wrapper',
+      templateGetter: 'getCategory',
+      endpoint: 'categories',
+      method: 'GET',
+      queryParameters: {
+        Language: language,
+      },
+      version: 'v1',
+      structure: 'data',
+      after: 'getCategory'
+    },
+    categoriesMenu: {
+      selector: '.n-categories-grid-mega-menu',
+      templateGetter: 'getCategoryMenu',
+      endpoint: 'categories',
+      method: 'GET',
+      queryParameters: {
+        Language: language,
+      },
+      version: 'v1',
+      structure: 'data',
+      limit: 14,
+      after: 'getCategoryMenu'
+    },
+    featuredShopsMenu: {
+      selector: '.n-menu-wrapper-featured .n-mm-feat-store-grid',
+      templateGetter: 'getFeaturedShopMenu',
+      endpoint: 'shops',
+      method: 'GET',
+      queryParameters: {
+        PageSize: 50,
+        Language: language,
+        Featured: true
+      },
+      limit: 6,
+      version: 'v2',
+      structure: 'data.result',
+      after: 'getFeaturedShopMenu',
+      randomizeData: true
+    },
+  };
+
+  if($('.n-section.shops .n-shops-wrapper .n-shops-sorting').length) {
+    if (catIdParam) {
+      createElements({ ...config.allShops, queryParameters: { ...config.allShops.queryParameters, CategoryIds: catIdParam } });
+      $('.n-shops .n-featured-shops-wrapper:first').hide();
+    } else {
+      createElements(config.allShops);
+    }
+    createElements(config.categories).then(count => $('.n-item-filters').show());
+    var storageFeatured = window.localStorage.getItem('featured');
+    if (storageFeatured && JSON.parse(storageFeatured).expiry > Date.now()) {
+      createSlider(config.featuredShops, JSON.parse(storageFeatured).shops);
+      createSlider(config.featuredShopsError, JSON.parse(storageFeatured).shops);
+    } else {
+      window.localStorage.removeItem('featured');
+      createSlider(config.featuredShops);
+      createSlider(config.featuredShopsError);
+    }
+  }
+
+  if ($('.swiper-box.featured-home').length) {
+    var storageFeatured = window.localStorage.getItem('featured');
+    if (storageFeatured && JSON.parse(storageFeatured).expiry > Date.now())
+      createSlider(config.featuredShopSwiper, JSON.parse(storageFeatured).shops);
+    else
+      createSlider(config.featuredShopSwiper);
+    createSlider(config.lastestShopSwiper);
+  }
+
+  if ($('.featured-shoppers').length) {
+    var storageFeatured = window.localStorage.getItem('featured');
+    if (storageFeatured && JSON.parse(storageFeatured).expiry > Date.now())
+      createSlider(config.featuredShopSwiperShopper, JSON.parse(storageFeatured).shops);
+    else
+      createSlider(config.featuredShopSwiperShopper);
+  }
+
+  var storageCategory = window.localStorage.getItem('category');
+  if (storageCategory && JSON.parse(storageCategory).expiry > Date.now()) {
+    createElements(config.categoriesMenu, JSON.parse(storageCategory).categories)
+  } else {
+    window.localStorage.removeItem('category');
+    createElements(config.categoriesMenu);
+  }
+  var storageFeatured = window.localStorage.getItem('featured');
+  if (storageFeatured && JSON.parse(storageFeatured).expiry > Date.now()) {
+    createElements(config.featuredShopsMenu, JSON.parse(storageFeatured).shops)
+  } else {
+    window.localStorage.removeItem('featured');
+    createElements(config.featuredShopsMenu);
+  }
+// });
+
+function getTemplate(name,data) {
+  var templatesFunctions = {
+    'getAllShop': function (data) {
+      if (!data) {
+        return '';
+      }
+      var imageUrl = "https://uploads-ssl.webflow.com/630f0a12999419c9747bd320/63328cd7b24127bb78ef71c2_Frame%20631786.svg";
+      if (data.featuredBannerImages.length) {
+        imageUrl = data.featuredBannerImages[0].url
+      }
+      var category = '';
+      if (data.mainCategory) {
+        category = data.mainCategory.name;
+      }
+
+      var logoImageUrl = "https://uploads-ssl.webflow.com/630f0a12999419c9747bd320/63328cd7b24127bb78ef71c2_Frame%20631786.svg";
+      if (data.logoImages.length) {
+        logoImageUrl = data.logoImages[0].url;
+      }
+
+      return `
+      <div class="n-wrapper-store-card">
+        <a href="${data.marketingUrl}" class="n-store-link w-inline-block"></a>
+        <div class="n-store-image-wrapper"><img src="${imageUrl}" alt="" class="n-store-image">
+          <div class="n-logo-wrapper"><img src="${logoImageUrl}" alt="" class="n-shop-logo"></div>
+        </div>
+        <div fs-cmsfilter-field="name" class="n-shop-name">${truncateString(data.name)}</div>
+        <div class="n-card-category-name">${category}</div>
+      </div>
+      `;
+    },
+    'getFeaturedShop': function(data) {
+      if (!data /*|| !data.display*/) {
+        return '';
+      }
+      var imageUrl = "https://uploads-ssl.webflow.com/630f0a12999419c9747bd320/63328cd7b24127bb78ef71c2_Frame%20631786.svg";
+      if (data.featuredBannerImages.length) {
+        imageUrl = data.featuredBannerImages[0].url
+      }
+      var category = '';
+      if (data.mainCategory) {
+        category = data.mainCategory.name;
+      }
+
+      return `
+        <div class="n-wrapper-store-card">
+          <a href="${data.marketingUrl}" class="n-store-link w-inline-block"></a>
+          <div class="n-store-image-wrapper"><img src="${imageUrl}" alt="" class="n-store-image">
+            <div class="n-logo-wrapper"><img src="${data.logoImages[0].url}" alt="" class="n-shop-logo"></div>
+          </div>
+          <div fs-cmsfilter-field="name" class="n-shop-name">${truncateString(data.name)}</div>
+          <div class="n-card-category-name">${category}</div>
+        </div>
+      `;
+    },
+    'getCategory': function (data) {
+      var activateClass = '';
+      if (data.id == catIdParam) {
+        activateClass = "w--redirected-checked";
+      }
+      return data ? `<div role="listitem" class="n-item-filters w-dyn-item">
+        <label class="w-checkbox n-checkbox-wrapper" data-cat-id="${data.id}">
+        <div class="w-checkbox-input w-checkbox-input--inputType-custom n-checkbox ${activateClass}"></div>
+        <input type="checkbox" name="checkbox-2" data-name="Checkbox 2" style="opacity:0;position:absolute;z-index:-1">
+        <span class="n-checkbox-label-categories w-form-label" for="checkbox-2">
+          ${data.name}
+        </span>
+      </label>
+    </div>` : null;
+    },
+    'getSubCategory': function(data) {
+      var data = data.data;
+      return `
+        <div class="n-tab-text n-hidden-on-devices" data-cat-id="${data.id}">${data.name}</div>
+      `;
+    },
+    'getCategoryMenu': function(data) {
+      return `
+        <a href="/shop?cat-id=${data.id}" class="n-categories w-dropdown-link" tabindex="0">${data.name}</a>
+      `;
+    },
+    'getFeaturedShopMenu': function (data) {
+      if (!data) {
+        return;
+      }
+      var imageUrl = "https://uploads-ssl.webflow.com/630f0a1299941995d67bd323/630f0a13999419760a7be359_ergoliving.dk.png";
+      if (data.featuredBannerImages.length) {
+        imageUrl = data.featuredBannerImages[0].url
+      }
+
+      var category = '';
+      if (data.mainCategory) {
+        category = `<div class="n-card-category-name">${data.mainCategory.name}</div>`;
+      }
+
+      var logoImageUrl = "https://uploads-ssl.webflow.com/630f0a12999419c9747bd320/63328cd7b24127bb78ef71c2_Frame%20631786.svg";
+      if (data.logoImages.length) {
+        logoImageUrl = data.logoImages[0].url;
+      }
+
+      return `
+        <a id="w-node-ecf96125-5766-0774-c695-12f25e3a5a9f-68400413" href="${data.marketingUrl}" class="n-megamenu-fav-wrapper n-padding-vertical n-padding-xsmall w-inline-block" tabindex="0">
+          <div class="n-mm-fav-card-image-wrapper"><img src="${imageUrl}" loading="lazy" alt="" class="n-fav-store-image">
+            <div class="n-logo-wrapper-mega-menu"><img src="${logoImageUrl}" loading="lazy" alt="" class="n-shop-logo-mega-menu"></div>
+          </div>
+          <div class="n-mm-feat-store-name n-padding-top n-padding-xsmall">${data.name}</div>
+          ${category}
+        </a>
+      `;
+    }
+  }
+  return templatesFunctions[name](data);
+}
+
+function getBefore(name, data) {
+  var beforeFunctions = {
+    'getAllShop': function (data) {
+      return '';
+    },
+    'getFeaturedShop': function(data) {
+      return ``;
+    },
+    'getCategory': function (data) {
+      return '';
+    }
+  }
+  return beforeFunctions[name] ? beforeFunctions[name](data) : null;
+}
+
+function getAfter(name, data) {
+  var afterFunctions = {
+    'getAllShop': function (data) {
+      if (data && data.length) {
+        $('.n-featured-shops-wrapper .w-dyn-empty').hide();
+        $('.n-shops-collection-list').show();
+      } else {
+        $('.n-featured-shops-wrapper .w-dyn-empty').show();
+        $('.n-shops-collection-list').hide();
+      }
+      return '';
+    },
+    'getFeaturedShop': function (data) {
+      $(window).trigger('resize');
+      return (data && data.length) ? `
+          <div class="left-arrow w-slider-arrow-left" role="button" tabindex="0" aria-controls="w-slider-mask-0" aria-label="previous slide">
+            <div class="n-arrow-div"><img src="https://uploads-ssl.webflow.com/630f0a12999419c9747bd320/632a8e5b94c9d18695b01993_Vector%20119.svg" alt=""></div>
+            <div class="icon-2 hidden w-icon-slider-left"></div>
+          </div>
+          <div class="right-arrow w-slider-arrow-right" role="button" tabindex="0" aria-controls="w-slider-mask-0" aria-label="next slide">
+            <div class="n-arrow-div"><img src="https://uploads-ssl.webflow.com/630f0a12999419c9747bd320/632a90cd32d85fda4a8b9b2f_Vector%20120.svg" alt=""></div>
+            <div class="icon-2 hidden w-icon-slider-right"></div>
+          </div>
+      ` : '';
+    },
+    'getCategory': function (data) {
+      window.categories = data;
+      var selectedCat = data.filter(cat => cat.id == catIdParam);
+      if(selectedCat.length)
+        $('.n-filters-shops .n-h3').html(selectedCat[0].name);
+      return '';
+    },
+    'getCategoryMenu': function (data) {
+      var localCategory = window.localStorage.getItem('category');
+      if (localCategory === null) {
+        const today = new Date();
+        var tomorrow = new Date();
+        tomorrow.setDate(today.getDate() + 1);
+        window.localStorage.setItem('category', JSON.stringify({ categories: data, expiry: tomorrow.getTime()}));
+      }
+      $('.parent .sibling.absolute .n-category-name').remove();
+      $('.parent .sibling.absolute').append(createCategoryMobileMenu(data));
+      $('.n-filters-wrapper.n-disappear-on-desktop .sibling.absolute .n-category-name').remove();
+      $('.n-filters-wrapper.n-disappear-on-desktop .sibling.absolute').append(createCategoryMobileMenu(data));
+      if (data.length)
+        $('.n-menu-wrapper-categories .w-dyn-empty').first().hide();
+      else
+        $('.n-menu-wrapper-categories .w-dyn-empty').first().show();
+      return '';
+    },
+    'getFeaturedShopMenu': function (data) {
+      var localFeatured = window.localStorage.getItem('featured');
+      if (localFeatured === null) {
+        const today = new Date();
+        var tomorrow = new Date();
+        tomorrow.setDate(today.getDate() + 1);
+        window.localStorage.setItem('featured', JSON.stringify({ shops: data, expiry: tomorrow.getTime()}));
+      }
+      if (data.length)
+        $('.n-menu-wrapper-featured .w-dyn-empty').hide();
+      else
+        $('.n-menu-wrapper-featured .w-dyn-empty').show();
+      return '';
+    }
+  }
+  return afterFunctions[name] ? afterFunctions[name](data) : null;
+}
+
+async function createElements(config, data) {
+  var html = "";
+  var origData;
+  if (data === undefined) {
+    try {
+      data = await anydayAPI(
+        config.endpoint,
+        config.method,
+        config.queryParameters,
+        config.version,
+        config.structure,
+        config.setPage ? config.setPage : undefined
+      );
+    } catch (e) {
+      console.log('Error occured while getting response from ' + config.endpoint);
+      console.log(e);
+      return;
+    }
+  }
+  if (config.randomizeData) {
+    if (data.length) {
+      var randomIndex = [];
+      var recLimit = Math.min(data.length, config.limit)
+      while(randomIndex.length < recLimit){
+          var r = Math.floor(Math.random() * data.length);
+          if(randomIndex.indexOf(r) === -1) randomIndex.push(r);
+      };
+      var randomData = randomIndex.map(index => data[index]);
+      origData = data;
+      data = randomData;
+    }
+  }
+  
+  var limit = config.limit ? config.limit : data.length;
+  html += (config.before && getBefore(config.before, data) !== null) ? getBefore(config.before, data) : '';
+  for (let i = 0; i < limit; i++) {
+    html += getTemplate(config.templateGetter, data[i]);
+  }
+  if (config.randomizeData) {
+    data = origData;
+  }
+  html += (config.after && getAfter(config.after, data) !== null) ? getAfter(config.after, data) : '';
+  $(config.selector).first().html('');
+  $(config.selector).first().html(html);
+  return data.length;
+}
+
+async function createSlider(config, data) {
+  var html = "";
+  if (data === undefined) {
+    try {
+      var data = await anydayAPI(
+        config.endpoint,
+        config.method,
+        config.queryParameters,
+        config.version,
+        config.structure
+      );
+    } catch (e) {
+      console.log('Error occured while getting response from ' + config.endpoint);
+      console.log(e);
+      return;
+    }
+  }
+  if (data.length) {
+    var elements = $(config.selector);
+    var randomIndex = [];
+    var recLimit = Math.min(data.length, elements.length);
+    while(randomIndex.length < recLimit){
+        var r = Math.floor(Math.random() * data.length);
+        if(randomIndex.indexOf(r) === -1) randomIndex.push(r);
+    };
+    var randomData = randomIndex.map(index => data[index]);
+    elements.each(function (index) {
+      $(this).html('');
+      $(this).html(getTemplate(config.templateGetter, randomData[index]));
+    });
+  }
+}
+
+async function anydayAPI(path, method = "GET", data, version, structure, setPage) {
+  const BASE_URL = "https://my.anyday.io/api/"+version+"/internal/";
+  queryString = "";
+  if (method === "GET" && data !== undefined) {
+    var queryString = Object.keys(data).map(function (key) {
+      if (key === 'categoryIds' && Array.isArray(data[key])) {
+        var categoriesIds = data[key];
+        return Object.keys(categoriesIds).map(function (index) {
+          return 'CategoryIds=' + categoriesIds[index];
+        }).join('&');
+      }
+      return key + '=' + data[key];
+    }).join('&');
+    queryString = "?" + queryString;
+  }
+  var response = await $.get(BASE_URL + path.trim() + queryString);
+  if (setPage) {
+    $('.n-pagination .previous-button, .n-pagination .load-more-button').removeClass('hidden').removeData('page');
+    if (response.data.totalPages == 1) {
+      $('.n-pagination .previous-button, .n-pagination .load-more-button').addClass('hidden');
+    } else if(response.data.page === response.data.totalPages) {
+      $('.n-pagination .load-more-button').addClass('hidden');
+      $('.n-pagination .previous-button').attr('data-page', response.data.page - 1);
+    } else {
+      if (response.data.page === 1) {
+        $('.n-pagination .previous-button').addClass('hidden');
+        $('.n-pagination .load-more-button').attr('data-page', response.data.page + 1);
+      } else {
+        $('.n-pagination .load-more-button').attr('data-page', response.data.page + 1);
+        $('.n-pagination .previous-button').attr('data-page', response.data.page - 1);
+      }
+    }
+  }
+  return processResponse(response, structure);
+}
+
+function processResponse(response, structure) {
+  structure = structure.split(".");
+  for (let i = 0; i < structure.length; i++) {
+    response = response[structure[i]];
+  }
+  return response;
+}
+
+function displaySubcategory(catArray) {
+  var categories = window.categories;
+  categories = categories.filter(cat => catArray.includes(cat.id));
+  var sub = [].concat(...categories.map(cat => cat['subCategories'] ? cat['subCategories'] : []));
+  var html = "";
+  for (let i = 0; i < sub.length; i++) {
+    html += getTemplate('getSubCategory', { data: sub[i], index: i });
+  }
+  $('.n-subcategories-wrapper-div').html(html)
+  $('.n-subcategories-wrapper-div').show();
+  $('.n-subcategories-wrapper-div .n-tab-text').show()
+}
+
+function escapeHtml(unsafe) {
+  return unsafe
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
+function truncateString(string = '', maxLength = 24) {
+  return string.length > maxLength
+    ? `${string.substring(0, maxLength)}…`
+    : string;
+}
+
+function createCategoryMobileMenu(data) {
+  return `<div class="n-category-name">
+  <div class="sibling">
+    <div class="n-mm-menu-link"><a href="/shop">All</a></div>
+  </div>` + data.map(cat => {
+    var html = `<div class="n-category-name">
+      <div data-w-id="${cat.id}" class="sibling">
+        <div class="n-mm-menu-link"><a href="/shop?cat-id=${cat.id}">${cat.name}</a></div>
+      </div>
+      <div style="display: none; transform: translate3d(100vw, 0px, 0px) scale3d(1, 1, 1) rotateX(0deg) rotateY(0deg) rotateZ(0deg) skew(0deg, 0deg); transform-style: preserve-3d;" class="sibling-2 absolute">
+        <div data-w-id="${cat.id}" class="n-mm-menu-header"><img src="https://uploads-ssl.webflow.com/630f0a12999419c9747bd320/632833cd94be2a75c049ba1d_Icon%20(39).svg" loading="lazy" alt="" class="n-mm-back">
+          <div class="n-mm-header-link">Back to categories</div>
+        </div>
+        <div class="n-mm-menu-item-wrapper">
+          <div class="n-mm-menu-heading">${cat.name}</div>
+        </div>
+        `;
+    html += `<div class="n-mm-menu-item-wrapper">
+        <a href="/shop?cat-id=${cat.id}" class="n-subcategory-name">View All</a>
+      </div>`;
+    html += cat.subCategories.map(subcat => {
+      return `<div class="n-mm-menu-item-wrapper">
+        <a href="/shop?cat-id=${subcat.id}" class="n-subcategory-name">${subcat.name}</a>
+      </div>`
+    }).join('');
+    html += `</div>
+    </div>`;
+    return html;
+  }).join('');
+}
+
+function collectShopParameter(param = {}) {
+  var shopConfig;
+  var catArray = [];
+  shopConfig = { ...config.allShops, queryParameters: { ...config.allShops.queryParameters, SortBy: 'name' } };
+  $('.n-list-filters-emp-copy .w--redirected-checked').each(function () {
+    catArray.push($(this).closest("label").data('cat-id'));
+  });
+  if (catArray.length) {
+    shopConfig = { ...shopConfig, queryParameters: { ...shopConfig.queryParameters, CategoryIds: catArray } };
+  }
+  if ($('.n-search-input.w-input').val().trim().length) {
+    shopConfig = { ...shopConfig, queryParameters: { ...shopConfig.queryParameters, Search: escapeHtml($('.n-search-input.w-input').val()) } };
+  }
+  if ($('#w-dropdown-list-1').attr('data-sort-decending') && parseInt($('#w-dropdown-list-1').attr('data-sort-decending')) == 1) {
+    shopConfig = { ...shopConfig, queryParameters: { ...shopConfig.queryParameters, Ascending: false } };
+  }
+  if ($('#w-dropdown-list-1').attr('data-sort-decending') && parseInt($('#w-dropdown-list-1').attr('data-sort-decending')) == 2) {
+    shopConfig = { ...shopConfig, queryParameters: { ...shopConfig.queryParameters, SortBy: 'CreatedDate', Ascending: false} };
+  }
+
+  if (!$.isEmptyObject(param)) {
+    shopConfig = { ...shopConfig, queryParameters: { ...shopConfig.queryParameters, ...param } };
+  }
+  return shopConfig;
+}
+
 document.addEventListener('DOMContentLoaded', function () {
-  var url = new URL(window.location.href);
-  var catIdParam = url.searchParams.get("cat-id");
-  var language = 'da';
 
   var swiper = new Swiper(".n-shops .n-featured-shops-wrapper .swiper", {
     slidesPerView: 1.2,
@@ -150,520 +740,6 @@ document.addEventListener('DOMContentLoaded', function () {
   //   window.rudderanalytics.track('Language changed');
   // });
 
-  const config = {
-    allShops: {
-      selector: '.n-featured-shops-wrapper .all-shop-list-wrapper',
-      templateGetter: 'getAllShop',
-      endpoint: 'shops',
-      method: 'GET',
-      queryParameters: {
-        PageSize: 24,
-        Language: language,
-        display: true
-      },
-      version: 'v2',
-      structure: 'data.result',
-      after: 'getAllShop',
-      setPage: true
-    },
-    featuredShops: {
-      selector: '.n-shops .n-featured-shops-wrapper .swiper-wrapper .swiper-slide',
-      templateGetter: 'getFeaturedShop',
-      endpoint: 'shops',
-      method: 'GET',
-      queryParameters: {
-        PageSize: 50,
-        Language: language,
-        Featured: true,
-        display: true
-      },
-      version: 'v2',
-      structure: 'data.result'
-    },
-    featuredShopsError: {
-      selector: '.n-search-error-wrapper .slider-search-error .swiper-wrapper .swiper-slide',
-      templateGetter: 'getFeaturedShop',
-      endpoint: 'shops',
-      method: 'GET',
-      queryParameters: {
-        PageSize: 50,
-        Language: language,
-        Featured: true,
-        display: true
-      },
-      version: 'v2',
-      structure: 'data.result'
-    },
-    featuredShopSwiper: {
-      selector: '.swiper-box.featured-home .swiper-wrapper .swiper-slide',
-      templateGetter: 'getFeaturedShop',
-      endpoint: 'shops',
-      method: 'GET',
-      queryParameters: {
-        PageSize: 50,
-        Language: language,
-        Featured: true,
-        display: true
-      },
-      version: 'v2',
-      structure: 'data.result'
-    },
-    featuredShopSwiperShopper: {
-      selector: '.swiper-box.featured-shoppers .swiper-wrapper .swiper-slide',
-      templateGetter: 'getFeaturedShop',
-      endpoint: 'shops',
-      method: 'GET',
-      queryParameters: {
-        PageSize: 50,
-        Language: language,
-        Featured: true,
-        display: true
-      },
-      version: 'v2',
-      structure: 'data.result'
-    },
-    lastestShopSwiper: {
-      selector: '.latest-added .swiper .swiper-wrapper .swiper-slide',
-      templateGetter: 'getFeaturedShop',
-      endpoint: 'shops',
-      method: 'GET',
-      queryParameters: {
-        PageSize: 50,
-        Language: language,
-        display: true,
-        SortBy: 'CreatedDate'
-      },
-      version: 'v2',
-      structure: 'data.result'
-    },
-    categories: {
-      selector: '.n-checkbox-wrapper',
-      templateGetter: 'getCategory',
-      endpoint: 'categories',
-      method: 'GET',
-      queryParameters: {
-        Language: language,
-      },
-      version: 'v1',
-      structure: 'data',
-      after: 'getCategory'
-    },
-    categoriesMenu: {
-      selector: '.n-categories-grid-mega-menu',
-      templateGetter: 'getCategoryMenu',
-      endpoint: 'categories',
-      method: 'GET',
-      queryParameters: {
-        Language: language,
-      },
-      version: 'v1',
-      structure: 'data',
-      limit: 14,
-      after: 'getCategoryMenu'
-    },
-    featuredShopsMenu: {
-      selector: '.n-menu-wrapper-featured .n-mm-feat-store-grid',
-      templateGetter: 'getFeaturedShopMenu',
-      endpoint: 'shops',
-      method: 'GET',
-      queryParameters: {
-        PageSize: 50,
-        Language: language,
-        Featured: true
-      },
-      limit: 6,
-      version: 'v2',
-      structure: 'data.result',
-      after: 'getFeaturedShopMenu',
-      randomizeData: true
-    },
-  }
-
-  function getTemplate(name,data) {
-    var templatesFunctions = {
-      'getAllShop': function (data) {
-        if (!data /*|| !data.display*/) {
-          return '';
-        }
-        var imageUrl = "https://uploads-ssl.webflow.com/630f0a12999419c9747bd320/63328cd7b24127bb78ef71c2_Frame%20631786.svg";
-        if (data.featuredBannerImages.length) {
-          imageUrl = data.featuredBannerImages[0].url
-        }
-        var category = '';
-        if (data.mainCategory) {
-          category = data.mainCategory.name;
-        }
-
-        var logoImageUrl = "https://uploads-ssl.webflow.com/630f0a12999419c9747bd320/63328cd7b24127bb78ef71c2_Frame%20631786.svg";
-        if (data.logoImages.length) {
-          logoImageUrl = data.logoImages[0].url;
-        }
-
-        return `
-        <div class="n-wrapper-store-card">
-          <a href="${data.marketingUrl}" class="n-store-link w-inline-block"></a>
-          <div class="n-store-image-wrapper"><img src="${imageUrl}" alt="" class="n-store-image">
-            <div class="n-logo-wrapper"><img src="${logoImageUrl}" alt="" class="n-shop-logo"></div>
-          </div>
-          <div fs-cmsfilter-field="name" class="n-shop-name">${truncateString(data.name)}</div>
-          <div class="n-card-category-name">${category}</div>
-        </div>
-        `;
-      },
-      'getFeaturedShop': function(data) {
-        if (!data /*|| !data.display*/) {
-          return '';
-        }
-        var imageUrl = "https://uploads-ssl.webflow.com/630f0a12999419c9747bd320/63328cd7b24127bb78ef71c2_Frame%20631786.svg";
-        if (data.featuredBannerImages.length) {
-          imageUrl = data.featuredBannerImages[0].url
-        }
-        var category = '';
-        if (data.mainCategory) {
-          category = data.mainCategory.name;
-        }
-
-        return `
-          <div class="n-wrapper-store-card">
-            <a href="${data.marketingUrl}" class="n-store-link w-inline-block"></a>
-            <div class="n-store-image-wrapper"><img src="${imageUrl}" alt="" class="n-store-image">
-              <div class="n-logo-wrapper"><img src="${data.logoImages[0].url}" alt="" class="n-shop-logo"></div>
-            </div>
-            <div fs-cmsfilter-field="name" class="n-shop-name">${truncateString(data.name)}</div>
-            <div class="n-card-category-name">${category}</div>
-          </div>
-        `;
-      },
-      'getCategory': function (data) {
-        var activateClass = '';
-        if (data.id == catIdParam) {
-          activateClass = "w--redirected-checked";
-        }
-        return data ? `<div role="listitem" class="n-item-filters w-dyn-item">
-          <label class="w-checkbox n-checkbox-wrapper" data-cat-id="${data.id}">
-          <div class="w-checkbox-input w-checkbox-input--inputType-custom n-checkbox ${activateClass}"></div>
-          <input type="checkbox" name="checkbox-2" data-name="Checkbox 2" style="opacity:0;position:absolute;z-index:-1">
-          <span class="n-checkbox-label-categories w-form-label" for="checkbox-2">
-            ${data.name}
-          </span>
-        </label>
-      </div>` : null;
-      },
-      'getSubCategory': function(data) {
-        var data = data.data;
-        return `
-          <div class="n-tab-text n-hidden-on-devices" data-cat-id="${data.id}">${data.name}</div>
-        `;
-      },
-      'getCategoryMenu': function(data) {
-        return `
-          <a href="/shop?cat-id=${data.id}" class="n-categories w-dropdown-link" tabindex="0">${data.name}</a>
-        `;
-      },
-      'getFeaturedShopMenu': function (data) {
-        if (!data) {
-          return;
-        }
-        var imageUrl = "https://uploads-ssl.webflow.com/630f0a1299941995d67bd323/630f0a13999419760a7be359_ergoliving.dk.png";
-        if (data.featuredBannerImages.length) {
-          imageUrl = data.featuredBannerImages[0].url
-        }
-
-        var category = '';
-        if (data.mainCategory) {
-          category = `<div class="n-card-category-name">${data.mainCategory.name}</div>`;
-        }
-
-        var logoImageUrl = "https://uploads-ssl.webflow.com/630f0a12999419c9747bd320/63328cd7b24127bb78ef71c2_Frame%20631786.svg";
-        if (data.logoImages.length) {
-          logoImageUrl = data.logoImages[0].url;
-        }
-
-        return `
-          <a id="w-node-ecf96125-5766-0774-c695-12f25e3a5a9f-68400413" href="${data.marketingUrl}" class="n-megamenu-fav-wrapper n-padding-vertical n-padding-xsmall w-inline-block" tabindex="0">
-            <div class="n-mm-fav-card-image-wrapper"><img src="${imageUrl}" loading="lazy" alt="" class="n-fav-store-image">
-              <div class="n-logo-wrapper-mega-menu"><img src="${logoImageUrl}" loading="lazy" alt="" class="n-shop-logo-mega-menu"></div>
-            </div>
-            <div class="n-mm-feat-store-name n-padding-top n-padding-xsmall">${data.name}</div>
-            ${category}
-          </a>
-        `;
-      }
-    }
-    return templatesFunctions[name](data);
-  }
-
-  function getBefore(name, data) {
-    var beforeFunctions = {
-      'getAllShop': function (data) {
-        return '';
-      },
-      'getFeaturedShop': function(data) {
-        return ``;
-      },
-      'getCategory': function (data) {
-        return '';
-      }
-    }
-    return beforeFunctions[name] ? beforeFunctions[name](data) : null;
-  }
-
-  function getAfter(name, data) {
-    var afterFunctions = {
-      'getAllShop': function (data) {
-        if (data && data.length) {
-          $('.n-featured-shops-wrapper .w-dyn-empty').hide();
-          $('.n-shops-collection-list').show();
-        } else {
-          $('.n-featured-shops-wrapper .w-dyn-empty').show();
-          $('.n-shops-collection-list').hide();
-        }
-        return '';
-      },
-      'getFeaturedShop': function (data) {
-        $(window).trigger('resize');
-        return (data && data.length) ? `
-            <div class="left-arrow w-slider-arrow-left" role="button" tabindex="0" aria-controls="w-slider-mask-0" aria-label="previous slide">
-              <div class="n-arrow-div"><img src="https://uploads-ssl.webflow.com/630f0a12999419c9747bd320/632a8e5b94c9d18695b01993_Vector%20119.svg" alt=""></div>
-              <div class="icon-2 hidden w-icon-slider-left"></div>
-            </div>
-            <div class="right-arrow w-slider-arrow-right" role="button" tabindex="0" aria-controls="w-slider-mask-0" aria-label="next slide">
-              <div class="n-arrow-div"><img src="https://uploads-ssl.webflow.com/630f0a12999419c9747bd320/632a90cd32d85fda4a8b9b2f_Vector%20120.svg" alt=""></div>
-              <div class="icon-2 hidden w-icon-slider-right"></div>
-            </div>
-        ` : '';
-      },
-      'getCategory': function (data) {
-        window.categories = data;
-        var selectedCat = data.filter(cat => cat.id == catIdParam);
-        if(selectedCat.length)
-          $('.n-filters-shops .n-h3').html(selectedCat[0].name);
-        return '';
-      },
-      'getCategoryMenu': function (data) {
-        var localCategory = window.localStorage.getItem('category');
-        if (localCategory === null) {
-          const today = new Date();
-          var tomorrow = new Date();
-          tomorrow.setDate(today.getDate() + 1);
-          window.localStorage.setItem('category', JSON.stringify({ categories: data, expiry: tomorrow.getTime()}));
-        }
-        $('.parent .sibling.absolute .n-category-name').remove();
-        $('.parent .sibling.absolute').append(createCategoryMobileMenu(data));
-        $('.n-filters-wrapper.n-disappear-on-desktop .sibling.absolute .n-category-name').remove();
-        $('.n-filters-wrapper.n-disappear-on-desktop .sibling.absolute').append(createCategoryMobileMenu(data));
-        if (data.length)
-          $('.n-menu-wrapper-categories .w-dyn-empty').first().hide();
-        else
-          $('.n-menu-wrapper-categories .w-dyn-empty').first().show();
-        return '';
-      },
-      'getFeaturedShopMenu': function (data) {
-        var localFeatured = window.localStorage.getItem('featured');
-        if (localFeatured === null) {
-          const today = new Date();
-          var tomorrow = new Date();
-          tomorrow.setDate(today.getDate() + 1);
-          window.localStorage.setItem('featured', JSON.stringify({ shops: data, expiry: tomorrow.getTime()}));
-        }
-        if (data.length)
-          $('.n-menu-wrapper-featured .w-dyn-empty').hide();
-        else
-          $('.n-menu-wrapper-featured .w-dyn-empty').show();
-        return '';
-      }
-    }
-    return afterFunctions[name] ? afterFunctions[name](data) : null;
-  }
-
-  async function createElements(config, data) {
-    var html = "";
-    var origData;
-    if (data === undefined) {
-      try {
-        data = await anydayAPI(
-          config.endpoint,
-          config.method,
-          config.queryParameters,
-          config.version,
-          config.structure,
-          config.setPage ? config.setPage : undefined
-        );
-      } catch (e) {
-        console.log('Error occured while getting response from ' + config.endpoint);
-        console.log(e);
-        return;
-      }
-    }
-    if (config.randomizeData) {
-      if (data.length) {
-        var randomIndex = [];
-        var recLimit = Math.min(data.length, config.limit)
-        while(randomIndex.length < recLimit){
-            var r = Math.floor(Math.random() * data.length);
-            if(randomIndex.indexOf(r) === -1) randomIndex.push(r);
-        };
-        var randomData = randomIndex.map(index => data[index]);
-        origData = data;
-        data = randomData;
-      }
-    }
-    
-    var limit = config.limit ? config.limit : data.length;
-    html += (config.before && getBefore(config.before, data) !== null) ? getBefore(config.before, data) : '';
-    for (let i = 0; i < limit; i++) {
-      html += getTemplate(config.templateGetter, data[i]);
-    }
-    if (config.randomizeData) {
-      data = origData;
-    }
-    html += (config.after && getAfter(config.after, data) !== null) ? getAfter(config.after, data) : '';
-    $(config.selector).first().html('');
-    $(config.selector).first().html(html);
-    return data.length;
-  }
-
-  async function createSlider(config, data) {
-    var html = "";
-    if (data === undefined) {
-      try {
-        var data = await anydayAPI(
-          config.endpoint,
-          config.method,
-          config.queryParameters,
-          config.version,
-          config.structure
-        );
-      } catch (e) {
-        console.log('Error occured while getting response from ' + config.endpoint);
-        console.log(e);
-        return;
-      }
-    }
-    if (data.length) {
-      var elements = $(config.selector);
-      var randomIndex = [];
-      var recLimit = Math.min(data.length, elements.length);
-      while(randomIndex.length < recLimit){
-          var r = Math.floor(Math.random() * data.length);
-          if(randomIndex.indexOf(r) === -1) randomIndex.push(r);
-      };
-      var randomData = randomIndex.map(index => data[index]);
-      elements.each(function (index) {
-        $(this).html('');
-        $(this).html(getTemplate(config.templateGetter, randomData[index]));
-      });
-    }
-  }
-
-  async function anydayAPI(path, method = "GET", data, version, structure, setPage) {
-    const BASE_URL = "https://my.anyday.io/api/"+version+"/internal/";
-    queryString = "";
-    if (method === "GET" && data !== undefined) {
-      var queryString = Object.keys(data).map(function (key) {
-        if (key === 'categoryIds' && Array.isArray(data[key])) {
-          var categoriesIds = data[key];
-          return Object.keys(categoriesIds).map(function (index) {
-            return 'CategoryIds=' + categoriesIds[index];
-          }).join('&');
-        }
-        return key + '=' + data[key];
-      }).join('&');
-      queryString = "?" + queryString;
-    }
-    var response = await $.get(BASE_URL + path.trim() + queryString);
-    if (setPage) {
-      $('.n-pagination .previous-button, .n-pagination .load-more-button').removeClass('hidden').removeData('page');
-      if (response.data.totalPages == 1) {
-        $('.n-pagination .previous-button, .n-pagination .load-more-button').addClass('hidden');
-      } else if(response.data.page === response.data.totalPages) {
-        $('.n-pagination .load-more-button').addClass('hidden');
-        $('.n-pagination .previous-button').attr('data-page', response.data.page - 1);
-      } else {
-        if (response.data.page === 1) {
-          $('.n-pagination .previous-button').addClass('hidden');
-          $('.n-pagination .load-more-button').attr('data-page', response.data.page + 1);
-        } else {
-          $('.n-pagination .load-more-button').attr('data-page', response.data.page + 1);
-          $('.n-pagination .previous-button').attr('data-page', response.data.page - 1);
-        }
-      }
-    }
-    // {
-    //   type: method,
-    //   url: BASE_URL+path.trim()+queryString,
-    //   dataType: "json",
-    // }
-    return processResponse(response, structure);
-  }
-
-  function processResponse(response, structure) {
-    structure = structure.split(".");
-    for (let i = 0; i < structure.length; i++) {
-      response = response[structure[i]];
-    }
-    return response;
-  }
-
-  function displaySubcategory(catArray) {
-    var categories = window.categories;
-    categories = categories.filter(cat => catArray.includes(cat.id));
-    var sub = [].concat(...categories.map(cat => cat['subCategories'] ? cat['subCategories'] : []));
-    var html = "";
-    for (let i = 0; i < sub.length; i++) {
-      html += getTemplate('getSubCategory', { data: sub[i], index: i });
-    }
-    $('.n-subcategories-wrapper-div').html(html)
-    $('.n-subcategories-wrapper-div').show();
-    $('.n-subcategories-wrapper-div .n-tab-text').show()
-  }
-
-  function escapeHtml(unsafe)
-  {
-    return unsafe
-      .replace(/&/g, "&amp;")
-      .replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;")
-      .replace(/"/g, "&quot;")
-      .replace(/'/g, "&#039;");
-  }
-
-  const truncateString = (string = '', maxLength = 24) =>
-    string.length > maxLength
-      ? `${string.substring(0, maxLength)}…`
-      : string;
-
-  function createCategoryMobileMenu(data) {
-    return `<div class="n-category-name">
-    <div class="sibling">
-      <div class="n-mm-menu-link"><a href="/shop">All</a></div>
-    </div>` + data.map(cat => {
-      var html = `<div class="n-category-name">
-        <div data-w-id="${cat.id}" class="sibling">
-          <div class="n-mm-menu-link"><a href="/shop?cat-id=${cat.id}">${cat.name}</a></div>
-        </div>
-        <div style="display: none; transform: translate3d(100vw, 0px, 0px) scale3d(1, 1, 1) rotateX(0deg) rotateY(0deg) rotateZ(0deg) skew(0deg, 0deg); transform-style: preserve-3d;" class="sibling-2 absolute">
-          <div data-w-id="${cat.id}" class="n-mm-menu-header"><img src="https://uploads-ssl.webflow.com/630f0a12999419c9747bd320/632833cd94be2a75c049ba1d_Icon%20(39).svg" loading="lazy" alt="" class="n-mm-back">
-            <div class="n-mm-header-link">Back to categories</div>
-          </div>
-          <div class="n-mm-menu-item-wrapper">
-            <div class="n-mm-menu-heading">${cat.name}</div>
-          </div>
-          `;
-      html += `<div class="n-mm-menu-item-wrapper">
-          <a href="/shop?cat-id=${cat.id}" class="n-subcategory-name">View All</a>
-        </div>`;
-      html += cat.subCategories.map(subcat => {
-        return `<div class="n-mm-menu-item-wrapper">
-          <a href="/shop?cat-id=${subcat.id}" class="n-subcategory-name">${subcat.name}</a>
-        </div>`
-      }).join('');
-      html += `</div>
-      </div>`;
-      return html;
-    }).join('');
-  }
-
   $('.previous-button:not(.hidden)').click(function (e) {
     e.preventDefault();
     createElements(collectShopParameter({ Page: $(this).data('page') }))
@@ -758,42 +834,20 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 });
 
-  function collectShopParameter(param = {}) {
-    var shopConfig;
-    var catArray = [];
-    shopConfig = { ...config.allShops, queryParameters: { ...config.allShops.queryParameters, SortBy: 'name' } };
-    $('.n-list-filters-emp-copy .w--redirected-checked').each(function () {
-      catArray.push($(this).closest("label").data('cat-id'));
-    });
-    if (catArray.length) {
-      shopConfig = { ...shopConfig, queryParameters: { ...shopConfig.queryParameters, CategoryIds: catArray } };
-    }
-    if ($('.n-search-input.w-input').val().trim().length) {
-      shopConfig = { ...shopConfig, queryParameters: { ...shopConfig.queryParameters, Search: escapeHtml($('.n-search-input.w-input').val()) } };
-    }
-    if ($('#w-dropdown-list-1').attr('data-sort-decending') && parseInt($('#w-dropdown-list-1').attr('data-sort-decending')) == 1) {
-      shopConfig = { ...shopConfig, queryParameters: { ...shopConfig.queryParameters, Ascending: false } };
-    }
-    if ($('#w-dropdown-list-1').attr('data-sort-decending') && parseInt($('#w-dropdown-list-1').attr('data-sort-decending')) == 2) {
-      shopConfig = { ...shopConfig, queryParameters: { ...shopConfig.queryParameters, SortBy: 'CreatedDate', Ascending: false} };
-    }
-
-    if (!$.isEmptyObject(param)) {
-      shopConfig = { ...shopConfig, queryParameters: { ...shopConfig.queryParameters, ...param } };
-    }
-    return shopConfig;
-  }
+  
 
   $('.w-dropdown-link').click(function () {
+    $('.dropdown-sort.w-dropdown-link').removeClass('active');
+    $(this).addClass('active');
     if ($(this).text() === "Z-A") {
       $('#w-dropdown-list-1').attr('data-sort-decending', '1');
       createElements(collectShopParameter({ Ascending: false }));
-    } else if($(this).text() === "Latest Added") {
-      $('#w-dropdown-list-1').attr('data-sort-decending', '2');
-      createElements(collectShopParameter({ SortBy: 'CreatedDate', Ascending: false }));
-    } else {
+    } else if ($(this).text() === "A-Z") {
       $('#w-dropdown-list-1').attr('data-sort-decending', '0');
       createElements(collectShopParameter({ Ascending: true }));
+    } else {
+      $('#w-dropdown-list-1').attr('data-sort-decending', '2');
+      createElements(collectShopParameter({ SortBy: 'CreatedDate', Ascending: false }));
     }
     $('.n-filters-wrapper-shops .n-filters-dropdown.w-dropdown').trigger('click');
   });
@@ -803,56 +857,7 @@ document.addEventListener('DOMContentLoaded', function () {
   $('.n-subcategories-wrapper-div').hide();
   $('.n-clear-search-link').hide();
 
-  if($('.n-section.shops .n-shops-wrapper .n-shops-sorting').length) {
-    if (catIdParam) {
-      createElements({ ...config.allShops, queryParameters: { ...config.allShops.queryParameters, CategoryIds: catIdParam } });
-      $('.n-shops .n-featured-shops-wrapper:first').hide();
-    } else {
-      createElements(config.allShops);
-    }
-    createElements(config.categories).then(count => $('.n-item-filters').show());
-    var storageFeatured = window.localStorage.getItem('featured');
-    if (storageFeatured && JSON.parse(storageFeatured).expiry > Date.now()) {
-      createSlider(config.featuredShops, JSON.parse(storageFeatured).shops);
-      createSlider(config.featuredShopsError, JSON.parse(storageFeatured).shops);
-    } else {
-      window.localStorage.removeItem('featured');
-      createSlider(config.featuredShops);
-      createSlider(config.featuredShopsError);
-    }
-  }
-
-  if ($('.swiper-box.featured-home').length) {
-    var storageFeatured = window.localStorage.getItem('featured');
-    if (storageFeatured && JSON.parse(storageFeatured).expiry > Date.now())
-      createSlider(config.featuredShopSwiper, JSON.parse(storageFeatured).shops);
-    else
-      createSlider(config.featuredShopSwiper);
-    createSlider(config.lastestShopSwiper);
-  }
-
-  if ($('.featured-shoppers').length) {
-    var storageFeatured = window.localStorage.getItem('featured');
-    if (storageFeatured && JSON.parse(storageFeatured).expiry > Date.now())
-      createSlider(config.featuredShopSwiperShopper, JSON.parse(storageFeatured).shops);
-    else
-      createSlider(config.featuredShopSwiperShopper);
-  }
-
-  var storageCategory = window.localStorage.getItem('category');
-  if (storageCategory && JSON.parse(storageCategory).expiry > Date.now()) {
-    createElements(config.categoriesMenu, JSON.parse(storageCategory).categories)
-  } else {
-    window.localStorage.removeItem('category');
-    createElements(config.categoriesMenu);
-  }
-  var storageFeatured = window.localStorage.getItem('featured');
-  if (storageFeatured && JSON.parse(storageFeatured).expiry > Date.now()) {
-    createElements(config.featuredShopsMenu, JSON.parse(storageFeatured).shops)
-  } else {
-    window.localStorage.removeItem('featured');
-    createElements(config.featuredShopsMenu);
-  }
+ 
   
 
   /**
