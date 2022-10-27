@@ -2,8 +2,8 @@ var language = 'en';
 var url = new URL(window.location.href);
 var catIdParam = url.searchParams.get("cat-id");
 var config = {};
-// Weglot.on('initialized', ()=>{
-//   var language = Weglot.getCurrentLang();
+Weglot.on('initialized', ()=>{
+  var language = Weglot.getCurrentLang();
   config = {
     allShops: {
       selector: '.n-featured-shops-wrapper .all-shop-list-wrapper',
@@ -186,7 +186,7 @@ var config = {};
     window.localStorage.removeItem('featured'+language);
     createElements(config.featuredShopsMenu);
   }
-// });
+});
 
 function getTemplate(name,data) {
   var templatesFunctions = {
