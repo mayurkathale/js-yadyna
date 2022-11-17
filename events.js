@@ -303,7 +303,7 @@ Weglot.on('initialized', ()=> {
       structure: 'data.result'
     },
   };
-  if ($('.n-layout-content-heading-center').length) {
+  if ($('.n-section.hero.black-week.wf-section').length) {
     $('.n-filters-wrapper.n-hidden-on-devices .n-item-filters').empty();
     Object.keys(discountCategories).forEach(function(k){
       $('.n-filters-wrapper.n-hidden-on-devices .n-item-filters').append(
