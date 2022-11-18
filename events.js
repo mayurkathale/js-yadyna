@@ -5,43 +5,66 @@ var config = {};
 var discountCategories = {
   'all': {
     caption: 'All partner</br>shops',
-    catId: 'somrthing'
+    catId: '',
+    heading: `<h2 class="n-h2">All partner shops</h2>`
   },
   '25t050offall': {
     caption: 'Save from<span class="pink-text">20%</span></br>to<span class="pink-text">50%</span>on all',
-    catId: ''
+    catId: '7a418f22-85f1-4f6c-997e-7390dccf3229',
+    heading: `<h2 id="shops" class="n-h2">Save from</h2>
+      <h2 id="shops" class="n-h2 pink-text">25%</h2>
+      <h2 id="shops" class="n-h2">to</h2>
+      <h2 id="shops" class="n-h2 pink-text">50%</h2>
+      <h2 id="shops" class="n-h2">on all</h2>`
   },
   '25offall': {
     caption: 'Save up to</br><span class="pink-text">25%</span>on all',
-    catId: ''
+    catId: '9849bf3f-63d9-4305-8610-c1d87f258f5d',
+    heading: `<h2 id="shops" class="n-h2">Save from</h2>
+      <h2 id="shops" class="n-h2 pink-text">25%</h2>
+      <h2 id="shops" class="n-h2">on all</h2>`
   },
   upto80: {
     caption: 'Save up to</br><span class="pink-text">80%</span>',
-    catId: ''
+    catId: 'b722cea6-8fea-4870-a1e4-57b8a44e807d',
+    heading: `<h2 id="shops" class="n-h2">Save upto</h2>
+      <h2 id="shops" class="n-h2 pink-text">80%</h2>`
   },
   upto70: {
     caption: 'Save up to</br><span class="pink-text">70%</span>',
-    catId: ''
+    catId: 'b722cea6-8fea-4870-a1e4-57b8a44e807d',
+    heading: `<h2 id="shops" class="n-h2">Save upto</h2>
+      <h2 id="shops" class="n-h2 pink-text">70%</h2>`
   },
   upto60: {
     caption: 'Save up to</br><span class="pink-text">60%</span>',
-    catId: ''
+    catId: '8240993c-6dfc-42f0-98ba-dd0c4830990f',
+    heading: `<h2 id="shops" class="n-h2">Save upto</h2>
+      <h2 id="shops" class="n-h2 pink-text">60%</h2>`
   },
   upto50: {
     caption: 'Save up to</br><span class="pink-text">50%</span>',
-    catId: ''
+    catId: '2a9a6112-65b1-4d5f-a3f2-aec68b9075f4',
+    heading: `<h2 id="shops" class="n-h2">Save upto</h2>
+      <h2 id="shops" class="n-h2 pink-text">50%</h2>`
   },
   upto40: {
     caption: 'Save up to</br><span class="pink-text">40%</span>',
-    catId: ''
+    catId: '2a9a6112-65b1-4d5f-a3f2-aec68b9075f4',
+    heading: `<h2 id="shops" class="n-h2">Save upto</h2>
+      <h2 id="shops" class="n-h2 pink-text">40%</h2>`
   },
   upto30: {
     caption: 'Save up to</br><span class="pink-text">30%</span>',
-    catId: ''
+    catId: 'c71b7386-a61f-4388-aa13-7ea018599e2d',
+    heading: `<h2 id="shops" class="n-h2">Save upto</h2>
+      <h2 id="shops" class="n-h2 pink-text">30%</h2>`
   },
   upto20: {
     caption: 'Save up to</br><span class="pink-text">20%</span>',
-    catId: ''
+    catId: 'c71b7386-a61f-4388-aa13-7ea018599e2d',
+    heading: `<h2 id="shops" class="n-h2">Save upto</h2>
+      <h2 id="shops" class="n-h2 pink-text">20%</h2>`
   }
 };
 Weglot.on('initialized', ()=> {
@@ -303,103 +326,136 @@ Weglot.on('initialized', ()=> {
       structure: 'data.result'
     },
   };
-  if ($('.n-section.hero.black-week.wf-section').length) {
+  var isShopsPage = $('.n-section.shops .n-shops-wrapper .n-shops-sorting').length ? true : false;
+  var isBlackweekPage = $('.n-section.hero.black-week.wf-section').length ? true : false;
+  if (isBlackweekPage) {
     $('.n-filters-wrapper.n-hidden-on-devices .n-item-filters').empty();
+    $('.n-bw-page-heading-wrapper').html('<h2 class "n-h2">All partner shops</h2>');
     Object.keys(discountCategories).forEach(function(k){
       $('.n-filters-wrapper.n-hidden-on-devices .n-item-filters').append(
-        `<div class="n-checkbox-wrapper-bw" data-cat-id="${discountCategories[k].catId}">
+        `<div class="n-checkbox-wrapper-bw" data-cat-id="${discountCategories[k].catId}" data-key="${k}">
         <div class="n-checkbox-label-categories">${discountCategories[k].caption}</div>
         <div class="n-checkbox-bw"></div>
         </div>`
         );
         $('.n-filters-wrapper.n-hidden-on-devices .n-item-filters .n-checkbox-wrapper-bw:first').addClass('selected');
+    });
+    //var discFilter = '';
+    $('.n-filters-wrapper.n-hidden-on-devices .n-item-filters .n-checkbox-wrapper-bw').click(function () {
+      $('.n-filters-wrapper.n-hidden-on-devices .n-item-filters .n-checkbox-wrapper-bw.selected').each(function (index) {
+        $(this).removeClass('selected');
       });
+      $(this).addClass('selected');
+      $('.n-bw-page-heading-wrapper').html(discountCategories[$(this).data('key')].heading);
+      filterDiscountShops();
+    });
+    filterDiscountShops();
+
+    $('.n-filters-wrapper').unbind('click').on('click', '.n-item-filters.w-dyn-item', function (event) {
+      if ($(this).attr('data-checker')) {
+        $('.n-item-filters.w-dyn-item').removeAttr('data-checker');
+        return false;
+      } else {
+        $(this).attr('data-checker', 1);
+      }
       
-      $('.n-filters-wrapper.n-hidden-on-devices .n-item-filters .n-checkbox-wrapper-bw').click(function () {
-        //var clickedCatId = $(this).data('cat-id');
-        //var arrayCat     = [];
-        //var allDiscShops;
-        //var catShops;
-        if ($(this).hasClass('selected')) {
-          $(this).removeClass('selected');
-        } else {
-          $(this).addClass('selected');
+      if (!$(this).hasClass('n-item-filters')) return;
+      var catArray = [];
+      if (!$(this).find("div.w-checkbox-input").hasClass('w--redirected-checked')) {
+        $('div.w-checkbox-input').removeClass('w--redirected-checked');
+        catArray.push($(this).children().data('cat-id'));
+        if (catArray.length) {
+          filterDiscountShops(catArray);
+          $('.n-shops .n-featured-shops-wrapper:first').hide();
         }
-        // $('.n-filters-wrapper.n-hidden-on-devices .n-item-filters .n-checkbox-wrapper-bw.selected').each(function (index) {
-        //   arrayCat.push($(this).data('cat-id'));
-        // });
-
-
-      });
-    }
-    if($('.n-section.shops .n-shops-wrapper .n-shops-sorting').length || true) {
-      if (catIdParam) {
-        createElements({ ...config.allShops, queryParameters: { ...config.allShops.queryParameters, CategoryIds: catIdParam } });
-        $('.n-shops .n-featured-shops-wrapper:first').hide();
       } else {
-        createElements(config.allShops);
+        $('div.w-checkbox-input').removeClass('w--redirected-checked');
+        filterDiscountShops();
+        $('.n-shops .n-featured-shops-wrapper:first').show();
+        $('.n-filters-shops .n-h3').html('All');
+        return false;
       }
-      createElements(config.categories).then(count => $('.n-item-filters').show());
-      var storageFeatured = window.localStorage.getItem('featured'+language);
-      if (storageFeatured && JSON.parse(storageFeatured).expiry > Date.now()) {
-        createSlider(config.featuredShops, JSON.parse(storageFeatured).shops);
-        createSlider(config.featuredShopsError, JSON.parse(storageFeatured).shops);
-      } else {
-        window.localStorage.removeItem('featured'+language);
-        createSlider(config.featuredShops);
-        createSlider(config.featuredShopsError);
-      }
-    }
-    
-    if ($('.swiper-box.featured-home').length) {
-      var storageFeatured = window.localStorage.getItem('featured'+language);
-      if (storageFeatured && JSON.parse(storageFeatured).expiry > Date.now())
-      createSlider(config.featuredShopSwiper, JSON.parse(storageFeatured).shops);
-      else
-      createSlider(config.featuredShopSwiper);
-      createSlider(config.lastestShopSwiper);
-    }
-    
-    if ($('.featured-shoppers').length) {
-      var storageFeatured = window.localStorage.getItem('featured'+language);
-      if (storageFeatured && JSON.parse(storageFeatured).expiry > Date.now())
-      createSlider(config.featuredShopSwiperShopper, JSON.parse(storageFeatured).shops);
-      else
-      createSlider(config.featuredShopSwiperShopper);
-    }
-    
-    var storageCategory = window.localStorage.getItem('category'+language);
-    if (storageCategory && JSON.parse(storageCategory).expiry > Date.now()) {
-      createElements(config.categoriesMenu, JSON.parse(storageCategory).categories)
+      $('.n-filters-shops .n-h3').html($(this).find('.n-checkbox-label-categories').html());
+      $(this).find('.w-checkbox-input').addClass('w--redirected-checked');
+      $('.n-search-wrapper .n-search-input').val('');
+    });
+  }
+  if(isShopsPage) {
+    if (catIdParam) {
+      createElements({ ...config.allShops, queryParameters: { ...config.allShops.queryParameters, CategoryIds: catIdParam } });
+      $('.n-shops .n-featured-shops-wrapper:first').hide();
     } else {
-      window.localStorage.removeItem('category'+language);
-      createElements(config.categoriesMenu);
+      createElements(config.allShops);
     }
-    var storageFeatured = window.localStorage.getItem('featured'+language);
+  }
+  if (isShopsPage || isBlackweekPage) {
+    createElements(config.categories).then(count => $('.n-item-filters').show());
+    var storageFeatured = window.localStorage.getItem('featured' + language);
     if (storageFeatured && JSON.parse(storageFeatured).expiry > Date.now()) {
-      createElements(config.featuredShopsMenu, JSON.parse(storageFeatured).shops)
+      createSlider(config.featuredShops, JSON.parse(storageFeatured).shops);
+      createSlider(config.featuredShopsError, JSON.parse(storageFeatured).shops);
     } else {
-      window.localStorage.removeItem('featured'+language);
-      createElements(config.featuredShopsMenu);
+      window.localStorage.removeItem('featured' + language);
+      createSlider(config.featuredShops);
+      createSlider(config.featuredShopsError);
     }
+  }
     
-    if ($('body > .hero.black-week.wf-section').length) {
-      createSlider(config.swiper25to50offall, JSON.parse(storageFeatured).shops);
-      createSlider(config.swiper25offall, JSON.parse(storageFeatured).shops);
-      createSlider(config.swiperupto80, JSON.parse(storageFeatured).shops);
-      createSlider(config.swiperupto70, JSON.parse(storageFeatured).shops);
-      createSlider(config.swiperupto60, JSON.parse(storageFeatured).shops);
-      createSlider(config.swiperupto50, JSON.parse(storageFeatured).shops);
-      createSlider(config.swiperupto40, JSON.parse(storageFeatured).shops);
-      createSlider(config.swiperupto30, JSON.parse(storageFeatured).shops);
-      createSlider(config.swiperupto20, JSON.parse(storageFeatured).shops);
-    }
+  if ($('.swiper-box.featured-home').length) {
+    var storageFeatured = window.localStorage.getItem('featured'+language);
+    if (storageFeatured && JSON.parse(storageFeatured).expiry > Date.now())
+    createSlider(config.featuredShopSwiper, JSON.parse(storageFeatured).shops);
+    else
+    createSlider(config.featuredShopSwiper);
+    createSlider(config.lastestShopSwiper);
+  }
+    
+  if ($('.featured-shoppers').length) {
+    var storageFeatured = window.localStorage.getItem('featured'+language);
+    if (storageFeatured && JSON.parse(storageFeatured).expiry > Date.now())
+    createSlider(config.featuredShopSwiperShopper, JSON.parse(storageFeatured).shops);
+    else
+    createSlider(config.featuredShopSwiperShopper);
+  }
+  
+  var storageCategory = window.localStorage.getItem('category'+language);
+  if (storageCategory && JSON.parse(storageCategory).expiry > Date.now()) {
+    createElements(config.categoriesMenu, JSON.parse(storageCategory).categories)
+  } else {
+    window.localStorage.removeItem('category'+language);
+    createElements(config.categoriesMenu);
+  }
+  var storageFeatured = window.localStorage.getItem('featured'+language);
+  if (storageFeatured && JSON.parse(storageFeatured).expiry > Date.now()) {
+    createElements(config.featuredShopsMenu, JSON.parse(storageFeatured).shops)
+  } else {
+    window.localStorage.removeItem('featured'+language);
+    createElements(config.featuredShopsMenu);
+  }
+  
+  if ($('body > .hero.black-week.wf-section').length) {
+    createSlider(config.swiper25to50offall, JSON.parse(storageFeatured).shops);
+    createSlider(config.swiper25offall, JSON.parse(storageFeatured).shops);
+    createSlider(config.swiperupto80, JSON.parse(storageFeatured).shops);
+    createSlider(config.swiperupto70, JSON.parse(storageFeatured).shops);
+    createSlider(config.swiperupto60, JSON.parse(storageFeatured).shops);
+    createSlider(config.swiperupto50, JSON.parse(storageFeatured).shops);
+    createSlider(config.swiperupto40, JSON.parse(storageFeatured).shops);
+    createSlider(config.swiperupto30, JSON.parse(storageFeatured).shops);
+    createSlider(config.swiperupto20, JSON.parse(storageFeatured).shops);
+  }
 });
   
-async function filterDiscountShops(discountCat) {
-  var configAll = { ...config.allShops, queryParameters: { ...config.allShops.queryParameters, PageSize: 100 } }
-  
-  var discountedConfig = { ...configAll, queryParameters: { ...configAll.queryParameters, CategoryIds: [discountCat]}}
+async function filterDiscountShops(filteredCat = '') {
+  var discountCat = getSelectedDiscountCategory();
+  if(filteredCat === '')
+    filteredCat = getSelectedCategory();
+  var configAll = { ...config.allShops, queryParameters: { ...config.allShops.queryParameters, PageSize: 100 }, limit: 24 };
+  if ($('.n-search-input.w-input').val().trim().length) {
+    configAll = { ...config.allShops, queryParameters: { ...config.allShops.queryParameters, Search: $('.n-search-input.w-input').val().trim() } };
+  }
+  var discountedConfig = { ...configAll, queryParameters: { ...configAll.queryParameters, CategoryIds: [discountCat] } };
+  var filteredConfig = { ...configAll, queryParameters: { ...configAll.queryParameters, Main: true, CategoryIds: [filteredCat] } };
   //get Array of all daiscounted items;
   var discounted = await anydayAPI(discountedConfig.endpoint,
     discountedConfig.method,
@@ -408,27 +464,70 @@ async function filterDiscountShops(discountCat) {
     discountedConfig.structure,
     discountedConfig.setPage ? config.setPage : undefined);
   
-  var filtered = await anydayAPI(discountedConfig.endpoint,
-    discountedConfig.method,
-    discountedConfig.queryParameters,
-    discountedConfig.version,
-    discountedConfig.structure,
-    discountedConfig.setPage ? config.setPage : undefined);
+  if (filteredCat != '') {
+    var filtered = await anydayAPI(filteredConfig.endpoint,
+      filteredConfig.method,
+      filteredConfig.queryParameters,
+      filteredConfig.version,
+      filteredConfig.structure,
+      filteredConfig.setPage ? config.setPage : undefined);
+  }
 
   //filter category shops in all discounted
-
-  filtered.filter(filteredshop => {
-    filteredshop.categories.each(function (filteredShopCat) {
-      discounted.each(function (discountedShop) {
-        discountedShop.categories.each(function (discountedShopCat) {
-          if (filteredShopCat.id == discountedShopCat.id) {
-            
-          }
-        });
+  var finalShops;
+  if (filteredCat != '') {
+    finalShops = filtered.filter(filteredshop => {
+      var found = false;
+      discounted.forEach(function (discountedShop) {
+        if (discountedShop.id === filteredshop.id) {
+          found = true;
+        }
       });
-    }) 
-  })
-  //print all shops
+      // filteredshop.categories.forEach(function (filteredShopCat) {
+      //   return discounted.forEach(function (discountedShop) {
+      //     return discountedShop.categories.forEach(function (discountedShopCat) {
+      //       if (filteredShopCat.id == discountedShopCat.id) {
+      //         found = true;
+      //         return;
+      //       }
+      //     });
+      //   });
+      // });
+      return found;
+    })
+  } else {
+    finalShops = discounted;
+  }
+
+  var html = "";
+  var limit = configAll.limit ? configAll.limit : finalShops.length;
+  html += (configAll.before && getBefore(configAll.before, finalShops) !== null) ? getBefore(configAll.before, finalShops) : '';
+  for (let i = 0; i < limit; i++) {
+    html += getTemplate(configAll.templateGetter, finalShops[i]);
+  }
+  if (configAll.randomizeData) {
+    finalShops = origData;
+  }
+  html += (configAll.after && getAfter(configAll.after, finalShops) !== null) ? getAfter(configAll.after, finalShops) : '';
+  $(configAll.selector).first().html('');
+  $(configAll.selector).first().html(html);
+
+  if (!finalShops.length) {
+    $('.n-shops .n-featured-shops-wrapper').hide();
+    $('.n-search-error-wrapper').show();
+    $('.n-pagination').hide();
+    $('html, body').animate({
+      scrollTop: $(".n-search-error-wrapper .n-search-error-text").offset().top - 100
+    }, 1000);
+    
+  } else {
+    $('.n-shops .n-featured-shops-wrapper').show();
+    $('.n-search-error-wrapper').hide();
+    $('.n-pagination').show();
+    $('html, body').animate({
+      scrollTop: $(".n-filters-shops .n-h3").offset().top - 100
+    }, 1000);
+  }
 }
 
 function getTemplate(name,data) {
@@ -781,10 +880,51 @@ function truncateString(string = '', maxLength = 24) {
 }
       
 function createCategoryMobileMenu(data) {
+  var deals = `
+  <div class="n-category-name">
+    <div class="sibling">
+      <div class="n-mm-menu-link"><a href="/black-week-deals">Black Week deals</a></div>
+    </div>
+    <div style="display: none; transform: translate3d(100vw, 0px, 0px) scale3d(1, 1, 1) rotateX(0deg) rotateY(0deg) rotateZ(0deg) skew(0deg, 0deg); transform-style: preserve-3d;" class="sibling-2 absolute">
+      <div class="n-mm-menu-header"><img src="https://uploads-ssl.webflow.com/630f0a12999419c9747bd320/632833cd94be2a75c049ba1d_Icon%20(39).svg" loading="lazy" alt="" class="n-mm-back">
+        <div class="n-mm-header-link">Back to categories</div>
+      </div>
+      <div class="n-mm-menu-item-wrapper">
+        <div class="n-mm-menu-heading">Black Week deals</div>
+      </div>
+      <div class="n-mm-menu-item-wrapper">
+        <a href="/shop?cat-id=" class="n-subcategory-name">Save from 25% to 50% on all</a>
+      </div>
+      <div class="n-mm-menu-item-wrapper">
+        <a href="/shop?cat-id=" class="n-subcategory-name">View All</a>
+      </div>
+      <div class="n-mm-menu-item-wrapper">
+        <a href="/shop?cat-id=" class="n-subcategory-name">View All</a>
+      </div>
+      <div class="n-mm-menu-item-wrapper">
+        <a href="/shop?cat-id=" class="n-subcategory-name">View All</a>
+      </div>
+      <div class="n-mm-menu-item-wrapper">
+        <a href="/shop?cat-id=" class="n-subcategory-name">View All</a>
+      </div>
+      <div class="n-mm-menu-item-wrapper">
+        <a href="/shop?cat-id=" class="n-subcategory-name">View All</a>
+      </div>
+      <div class="n-mm-menu-item-wrapper">
+        <a href="/shop?cat-id=" class="n-subcategory-name">View All</a>
+      </div>
+      <div class="n-mm-menu-item-wrapper">
+        <a href="/shop?cat-id=" class="n-subcategory-name">View All</a>
+      </div>
+    </div>
+  </div>
+  `;
   return `<div class="n-category-name">
-  <div class="sibling">
-  <div class="n-mm-menu-link"><a href="/shop">All</a></div>
-  </div>` + data.map(cat => {
+    <div class="sibling">
+    <div class="n-mm-menu-link"><a href="/shop">All</a></div>
+    </div>
+    ${deals}` +
+    data.map(cat => {
     var html = `<div class="n-category-name">
     <div data-w-id="${cat.id}" class="sibling">
     <div class="n-mm-menu-link"><a href="/shop?cat-id=${cat.id}">${cat.name}</a></div>
@@ -836,8 +976,22 @@ function collectShopParameter(param = {}) {
   }
   return shopConfig;
 }
+
+function getSelectedDiscountCategory() {
+  return $('.n-filters-wrapper.n-hidden-on-devices .n-item-filters .n-checkbox-wrapper-bw.selected').data('cat-id');
+}
+
+function getSelectedCategory() {
+  var catArray = [];
+  $('.n-list-filters-emp-copy .w--redirected-checked').each(function () {
+    catArray.push($(this).closest("label").data('cat-id'));
+  });
+  return catArray
+}
       
 document.addEventListener('DOMContentLoaded', function () {
+  var isShopsPage = $('.n-section.shops .n-shops-wrapper .n-shops-sorting').length ? true : false;
+  var isBlackweekPage = $('.n-section.hero.black-week.wf-section').length ? true : false;
   var swiper = new Swiper(".n-shops .n-featured-shops-wrapper .swiper", {
     slidesPerView: 1.2,
     spaceBetween: 30,
@@ -1218,37 +1372,40 @@ document.addEventListener('DOMContentLoaded', function () {
       }, 1000);
     });
   });
-  
-  $('.n-filters-wrapper').unbind('click').on('click', '.n-item-filters.w-dyn-item', function (event) {
-    if ($(this).attr('data-checker')) {
-      $('.n-item-filters.w-dyn-item').removeAttr('data-checker');
-      return false;
-    } else {
-      $(this).attr('data-checker', 1);
-    }
+
+  if (isShopsPage) {
     
-    if (!$(this).hasClass('n-item-filters')) return;
-    var catArray = [];
-    if (!$(this).find("div.w-checkbox-input").hasClass('w--redirected-checked')) {
-      $('div.w-checkbox-input').removeClass('w--redirected-checked');
-      catArray.push($(this).children().data('cat-id'));
-      //displaySubcategory(catArray);
-      if (catArray.length) {
-        createElements({ ...config.allShops, queryParameters: { ...config.allShops.queryParameters, categoryIds: catArray } });
-        $('.n-shops .n-featured-shops-wrapper:first').hide();
+    $('.n-filters-wrapper').unbind('click').on('click', '.n-item-filters.w-dyn-item', function (event) {
+      if ($(this).attr('data-checker')) {
+        $('.n-item-filters.w-dyn-item').removeAttr('data-checker');
+        return false;
+      } else {
+        $(this).attr('data-checker', 1);
       }
-    } else {
-      $('div.w-checkbox-input').removeClass('w--redirected-checked');
-      //displaySubcategory(catArray);
-      createElements({ ...config.allShops });
-      $('.n-shops .n-featured-shops-wrapper:first').show();
-      $('.n-filters-shops .n-h3').html('All');
-      return false;
-    }
-    $('.n-filters-shops .n-h3').html($(this).find('.n-checkbox-label-categories').html());
-    $(this).find('.w-checkbox-input').addClass('w--redirected-checked');
-    $('.n-search-wrapper .n-search-input').val('');
-  });
+      
+      if (!$(this).hasClass('n-item-filters')) return;
+      var catArray = [];
+      if (!$(this).find("div.w-checkbox-input").hasClass('w--redirected-checked')) {
+        $('div.w-checkbox-input').removeClass('w--redirected-checked');
+        catArray.push($(this).children().data('cat-id'));
+        //displaySubcategory(catArray);
+        if (catArray.length) {
+          createElements({ ...config.allShops, queryParameters: { ...config.allShops.queryParameters, categoryIds: catArray } });
+          $('.n-shops .n-featured-shops-wrapper:first').hide();
+        }
+      } else {
+        $('div.w-checkbox-input').removeClass('w--redirected-checked');
+        //displaySubcategory(catArray);
+        createElements({ ...config.allShops });
+        $('.n-shops .n-featured-shops-wrapper:first').show();
+        $('.n-filters-shops .n-h3').html('All');
+        return false;
+      }
+      $('.n-filters-shops .n-h3').html($(this).find('.n-checkbox-label-categories').html());
+      $(this).find('.w-checkbox-input').addClass('w--redirected-checked');
+      $('.n-search-wrapper .n-search-input').val('');
+    });
+  }
   
   $('body').on('click', '.n-subcategories-wrapper-div .n-tab-text', function (event) {
     $('.n-tab-subcategories').removeClass('w--current');
@@ -1375,15 +1532,29 @@ document.addEventListener('DOMContentLoaded', function () {
     $('.sibling.absolute').hide();
   });
   
-  $('.n-gradient-arrow-left .n-categories-arrow-link-block').click(function () {
-    var element = document.getElementsByClassName('n-list-filters-emp-copy')[0];
+  $('.n-filters-wrapper.bw .n-gradient-arrow-left .n-categories-arrow-link-block').click(function () {
+    var element = document.querySelector('.n-filters-wrapper.bw .n-list-filters-emp-copy');
     element.scrollBy({
       left: -150,
       behavior: 'smooth'
     });
   });
-  $('.n-gradient-arrow-right .n-categories-arrow-link-block').click(function () {
-    var element = document.getElementsByClassName('n-list-filters-emp-copy')[0];
+  $('.n-filters-wrapper.bw .n-gradient-arrow-right .n-categories-arrow-link-block').click(function () {
+    var element = document.querySelector('.n-filters-wrapper.bw .n-list-filters-emp-copy');
+    element.scrollBy({
+      left: 150,
+      behavior: 'smooth'
+    });
+  });
+  $('.n-filters-wrapper.n-hidden-on-devices .n-gradient-arrow-left .n-categories-arrow-link-block').click(function () {
+    var element = document.querySelector('.n-filters-wrapper.n-hidden-on-devices .n-list-filters-emp-copy');
+    element.scrollBy({
+      left: -150,
+      behavior: 'smooth'
+    });
+  });
+  $('.n-filters-wrapper.n-hidden-on-devices .n-gradient-arrow-right .n-categories-arrow-link-block').click(function () {
+    var element = document.querySelector('.n-filters-wrapper.n-hidden-on-devices .n-list-filters-emp-copy');
     element.scrollBy({
       left: 150,
       behavior: 'smooth'
