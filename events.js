@@ -451,9 +451,13 @@ Weglot.on('initialized', ()=> {
   
 async function filterDiscountShops(filteredCat = '') {
   var discountCat = getSelectedDiscountCategory();
+  var searchTerm = '';
   if(filteredCat === '')
     filteredCat = getSelectedCategory();
-  var configAll = { ...config.allShops, queryParameters: { ...config.allShops.queryParameters, PageSize: 100 }, limit: 24 };
+  if ($('.n-search-wrapper .n-search-input.shop.w-input').val().trim().length) {
+    searchTerm = $('.n-search-wrapper .n-search-input.shop.w-input').val().trim();
+  }
+  var configAll = { ...config.allShops, queryParameters: { ...config.allShops.queryParameters, PageSize: 100, Search: searchTerm }, limit: 24 };
   if ($('.n-search-input.w-input').val().trim().length) {
     configAll = { ...config.allShops, queryParameters: { ...config.allShops.queryParameters, Search: $('.n-search-input.w-input').val().trim() } };
   }
@@ -1397,6 +1401,40 @@ document.addEventListener('DOMContentLoaded', function () {
       $(this).find('.w-checkbox-input').addClass('w--redirected-checked');
       $('.n-search-wrapper .n-search-input').val('');
     });
+
+    $('body').on('click', '.n-absolute-elements-search .n-primary-button', function (event) {
+      var catArray = [];
+      $('.n-list-filters-emp-copy .w--redirected-checked').each(function () {
+        catArray.push($(this).closest("label").data('cat-id'));
+      });
+      createElements({ ...config.allShops, queryParameters: { ...config.allShops.queryParameters, CategoryIds: catArray, Search: escapeHtml($('.n-search-input.w-input').val()) } })
+      .then(count => {
+        if (!count) {
+          $('.n-shops .n-featured-shops-wrapper').hide();
+          $('.n-search-error-wrapper').show();
+          $('.n-pagination').hide();
+          $('.n-filters-dropdown.w-dropdown').show();
+          $('html, body').animate({
+            scrollTop: $(".n-search-error-wrapper .n-search-error-text").offset().top - 100
+          }, 1000);
+          
+        } else {
+          $('.n-shops .n-featured-shops-wrapper').show();
+          $('.n-search-error-wrapper').hide();
+          $('.n-pagination').show();
+          $('.n-filters-dropdown.w-dropdown').show();
+          $('html, body').animate({
+            scrollTop: $(".n-filters-shops .n-h3").offset().top - 100
+          }, 1000);
+        }
+      });
+    });
+  }
+
+  if (isBlackweekPage) {
+    $('body').on('click', '.n-absolute-elements-search .n-primary-button', function (event) {
+      filterDiscountShops()
+    });
   }
   
   $('body').on('click', '.n-subcategories-wrapper-div .n-tab-text', function (event) {
@@ -1404,32 +1442,6 @@ document.addEventListener('DOMContentLoaded', function () {
     $(this).addClass('w--current');
     var id = $(this).data('cat-id');
     createElements({...config.allShops, queryParameters: {...config.allShops.queryParameters, CategoryIds: id}});
-  });
-  
-  $('body').on('click', '.n-absolute-elements-search .n-primary-button', function (event) {
-    var catArray = [];
-    $('.n-list-filters-emp-copy .w--redirected-checked').each(function () {
-      catArray.push($(this).closest("label").data('cat-id'));
-    });
-    createElements({ ...config.allShops, queryParameters: { ...config.allShops.queryParameters, CategoryIds: catArray, Search: escapeHtml($('.n-search-input.w-input').val()) } })
-    .then(count => {
-      if (!count) {
-        $('.n-shops .n-featured-shops-wrapper').hide();
-        $('.n-search-error-wrapper').show();
-        $('.n-pagination').hide();
-        $('html, body').animate({
-          scrollTop: $(".n-search-error-wrapper .n-search-error-text").offset().top - 100
-        }, 1000);
-        
-      } else {
-        $('.n-shops .n-featured-shops-wrapper').show();
-        $('.n-search-error-wrapper').hide();
-        $('.n-pagination').show();
-        $('html, body').animate({
-          scrollTop: $(".n-filters-shops .n-h3").offset().top - 100
-        }, 1000);
-      }
-    });
   });
   
   $('.n-search-wrapper .n-search-input').keydown(function (event) { 
@@ -1441,8 +1453,6 @@ document.addEventListener('DOMContentLoaded', function () {
       return false;
     }
   });
-  
-  
   
   $('.w-dropdown-link').click(function () {
     $('.dropdown-sort.w-dropdown-link').removeClass('active');
