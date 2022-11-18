@@ -349,8 +349,11 @@ Weglot.on('initialized', ()=> {
       $('.n-bw-page-heading-wrapper').html(discountCategories[$(this).data('key')].heading);
       filterDiscountShops();
     });
-    filterDiscountShops();
-
+    if (!getSelectedCategory().length && getSelectedDiscountCategory() === '') {
+      createElements({ ...config.allShops, queryParameters: { ...config.allShops.queryParameters, CategoryIds: catIdParam } });
+    } else {
+      filterDiscountShops();
+    }
     $('.n-filters-wrapper').unbind('click').on('click', '.n-item-filters.w-dyn-item', function (event) {
       if ($(this).attr('data-checker')) {
         $('.n-item-filters.w-dyn-item').removeAttr('data-checker');
@@ -456,7 +459,6 @@ async function filterDiscountShops(filteredCat = '') {
   }
   var discountedConfig = { ...configAll, queryParameters: { ...configAll.queryParameters, CategoryIds: [discountCat] } };
   var filteredConfig = { ...configAll, queryParameters: { ...configAll.queryParameters, Main: true, CategoryIds: [filteredCat] } };
-  //get Array of all daiscounted items;
   var discounted = await anydayAPI(discountedConfig.endpoint,
     discountedConfig.method,
     discountedConfig.queryParameters,
@@ -473,7 +475,6 @@ async function filterDiscountShops(filteredCat = '') {
       filteredConfig.setPage ? config.setPage : undefined);
   }
 
-  //filter category shops in all discounted
   var finalShops;
   if (filteredCat != '') {
     finalShops = filtered.filter(filteredshop => {
@@ -483,16 +484,6 @@ async function filterDiscountShops(filteredCat = '') {
           found = true;
         }
       });
-      // filteredshop.categories.forEach(function (filteredShopCat) {
-      //   return discounted.forEach(function (discountedShop) {
-      //     return discountedShop.categories.forEach(function (discountedShopCat) {
-      //       if (filteredShopCat.id == discountedShopCat.id) {
-      //         found = true;
-      //         return;
-      //       }
-      //     });
-      //   });
-      // });
       return found;
     })
   } else {
@@ -523,7 +514,8 @@ async function filterDiscountShops(filteredCat = '') {
   } else {
     $('.n-shops .n-featured-shops-wrapper').show();
     $('.n-search-error-wrapper').hide();
-    $('.n-pagination').show();
+    $('.n-pagination').hide();
+    $('.n-filters-dropdown.w-dropdown').hide();
     $('html, body').animate({
       scrollTop: $(".n-filters-shops .n-h3").offset().top - 100
     }, 1000);
