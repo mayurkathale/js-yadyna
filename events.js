@@ -345,7 +345,7 @@ Weglot.on('initialized', ()=> {
     },
     swiperupto20: {
       selector: '.swiper-box .swiper.up-to-20 .swiper-wrapper .swiper-slide',
-      templateGetter: 'getAgetAllShopBackWeekllShop',
+      templateGetter: 'getAllShopBackWeek',
       endpoint: 'shops',
       method: 'GET',
       queryParameters: {
