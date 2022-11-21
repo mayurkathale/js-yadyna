@@ -367,17 +367,19 @@ Weglot.on('initialized', ()=> {
         );
         $('.n-filters-wrapper.n-hidden-on-devices .n-item-filters .n-checkbox-wrapper-bw:first').addClass('selected');
     });
+
     $('.n-filters-wrapper.n-hidden-on-devices .n-item-filters .n-checkbox-wrapper-bw').click(function () {
       $('.n-filters-wrapper.n-hidden-on-devices .n-item-filters .n-checkbox-wrapper-bw.selected').each(function (index) {
         $(this).removeClass('selected');
       });
       $('div.w-checkbox-input').removeClass('w--redirected-checked');
       $(this).addClass('selected');
-      createElements({ ...config.categoriesBlackWeek, endpoint: 'categories/'+$(this).data('cat-id') }).then(count => $('.n-item-filters').show());
+      //createElements({ ...config.categoriesBlackWeek, endpoint: 'categories/'+$(this).data('cat-id') }).then(count => $('.n-item-filters').show());
       $('.n-shops .n-featured-shops-wrapper:first').hide();
       $('.n-bw-page-heading-wrapper').html(discountCategories[$(this).data('key')].heading);
       filterDiscountShops();
     });
+
     if (!getSelectedCategory().length && getSelectedDiscountCategory() === '') {
       var id;
       if (dealCatIdParam) {
@@ -556,6 +558,26 @@ async function filterDiscountShops(filteredCat = '') {
   html += (configAll.after && getAfter(configAll.after, finalShops) !== null) ? getAfter(configAll.after, finalShops) : '';
   $(configAll.selector).first().html('');
   $(configAll.selector).first().html(html);
+
+
+  if (false) {
+    $('.n-pagination .previous-button, .n-pagination .load-more-button').removeClass('hidden').removeData('page');
+    if (response.data.totalPages == 1) {
+      $('.n-pagination .previous-button, .n-pagination .load-more-button').addClass('hidden');
+    } else if(response.data.page === response.data.totalPages) {
+      $('.n-pagination .load-more-button').addClass('hidden');
+      $('.n-pagination .previous-button').attr('data-page', response.data.page - 1);
+    } else {
+      if (response.data.page === 1) {
+        $('.n-pagination .previous-button').addClass('hidden');
+        $('.n-pagination .load-more-button').attr('data-page', response.data.page + 1);
+      } else {
+        $('.n-pagination .load-more-button').attr('data-page', response.data.page + 1);
+        $('.n-pagination .previous-button').attr('data-page', response.data.page - 1);
+      }
+    }
+  }
+
 
   if (!finalShops.length) {
     $('.n-search-error-wrapper').show();
