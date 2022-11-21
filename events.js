@@ -3,6 +3,17 @@ var url = new URL(window.location.href);
 var catIdParam = url.searchParams.get("cat-id");
 var dealCatIdParam = url.searchParams.get("deal-id");
 var config = {};
+var allDealCategories = [
+  '7a418f22-85f1-4f6c-997e-7390dccf3229',
+  '9849bf3f-63d9-4305-8610-c1d87f258f5d',
+  'b722cea6-8fea-4870-a1e4-57b8a44e807d',
+  '8240993c-6dfc-42f0-98ba-dd0c4830990f',
+  '069c7108-fa76-48b0-aca3-61b751f2324e',
+  '2a9a6112-65b1-4d5f-a3f2-aec68b9075f4',
+  '66b92fdb-d6cf-4628-be21-7e0ef9479206',
+  'c71b7386-a61f-4388-aa13-7ea018599e2d',
+  '3cd1f971-b82d-4812-a8e9-f213e9a1bdf8'
+];
 var discountCategories = {
   'all': {
     caption: 'All partner</br>shops',
@@ -33,13 +44,13 @@ var discountCategories = {
   },
   upto70: {
     caption: 'Save up to</br><span class="pink-text">70%</span>',
-    catId: 'b722cea6-8fea-4870-a1e4-57b8a44e807d',
+    catId: '8240993c-6dfc-42f0-98ba-dd0c4830990f',
     heading: `<h2 id="shops" class="n-h2">Save upto</h2>
       <h2 id="shops" class="n-h2 pink-text">70%</h2>`
   },
   upto60: {
     caption: 'Save up to</br><span class="pink-text">60%</span>',
-    catId: '8240993c-6dfc-42f0-98ba-dd0c4830990f',
+    catId: '069c7108-fa76-48b0-aca3-61b751f2324e',
     heading: `<h2 id="shops" class="n-h2">Save upto</h2>
       <h2 id="shops" class="n-h2 pink-text">60%</h2>`
   },
@@ -51,7 +62,7 @@ var discountCategories = {
   },
   upto40: {
     caption: 'Save up to</br><span class="pink-text">40%</span>',
-    catId: '2a9a6112-65b1-4d5f-a3f2-aec68b9075f4',
+    catId: '66b92fdb-d6cf-4628-be21-7e0ef9479206',
     heading: `<h2 id="shops" class="n-h2">Save upto</h2>
       <h2 id="shops" class="n-h2 pink-text">40%</h2>`
   },
@@ -63,7 +74,7 @@ var discountCategories = {
   },
   upto20: {
     caption: 'Save up to</br><span class="pink-text">20%</span>',
-    catId: 'c71b7386-a61f-4388-aa13-7ea018599e2d',
+    catId: '3cd1f971-b82d-4812-a8e9-f213e9a1bdf8',
     heading: `<h2 id="shops" class="n-h2">Save upto</h2>
       <h2 id="shops" class="n-h2 pink-text">20%</h2>`
   }
@@ -170,6 +181,17 @@ Weglot.on('initialized', ()=> {
       version: 'v1',
       structure: 'data',
       after: 'getCategory'
+    },
+    categoriesBlackWeek: {
+      selector: '.n-checkbox-wrapper',
+      templateGetter: 'getCategory',
+      endpoint: 'categories',
+      method: 'GET',
+      queryParameters: {
+        Language: language,
+      },
+      version: 'v1',
+      structure: 'data'
     },
     categoriesMenu: {
       selector: '.n-categories-grid-mega-menu',
@@ -317,6 +339,19 @@ Weglot.on('initialized', ()=> {
       version: 'v2',
       structure: 'data.result'
     },
+    swiperdealhome: {
+      selector: '.swiper-box .swiper.black-week-swiper .swiper-wrapper .swiper-slide',
+      templateGetter: 'getAllShop',
+      endpoint: 'shops',
+      method: 'GET',
+      queryParameters: {
+        Language: language,
+        CategoryIds: allDealCategories,
+        display: true
+      },
+      version: 'v2',
+      structure: 'data.result'
+    }
   };
   var isShopsPage = $('.n-section.shops .n-shops-wrapper .n-shops-sorting').length ? true : false;
   var isBlackweekPage = $('.n-section.hero.black-week.wf-section').length ? true : false;
@@ -336,7 +371,9 @@ Weglot.on('initialized', ()=> {
       $('.n-filters-wrapper.n-hidden-on-devices .n-item-filters .n-checkbox-wrapper-bw.selected').each(function (index) {
         $(this).removeClass('selected');
       });
+      $('div.w-checkbox-input').removeClass('w--redirected-checked');
       $(this).addClass('selected');
+      createElements({ ...config.categoriesBlackWeek, endpoint: 'categories/'+$(this).data('cat-id') }).then(count => $('.n-item-filters').show());
       $('.n-shops .n-featured-shops-wrapper:first').hide();
       $('.n-bw-page-heading-wrapper').html(discountCategories[$(this).data('key')].heading);
       filterDiscountShops();
@@ -346,12 +383,15 @@ Weglot.on('initialized', ()=> {
       if (dealCatIdParam) {
         id = dealCatIdParam;
         $('.n-shops .n-featured-shops-wrapper:first').hide();
+        $('.n-filters-wrapper.n-hidden-on-devices .n-item-filters .n-checkbox-wrapper-bw.selected').each(function (index) {
+          $(this).removeClass('selected');
+        });
       } else {
         id = catIdParam
       }
-      $('.n-filters-wrapper.n-hidden-on-devices .n-item-filters .n-checkbox-wrapper-bw.selected').each(function (index) {
-        $(this).removeClass('selected');
-      });
+      if (!id) {
+        id = allDealCategories;
+      }
       $('.n-filters-wrapper.n-hidden-on-devices .n-item-filters .n-checkbox-wrapper-bw').each(function (index) {
         if($(this).data('cat-id') == dealCatIdParam)
           $(this).addClass('selected');
@@ -389,6 +429,10 @@ Weglot.on('initialized', ()=> {
       $('.n-search-wrapper .n-search-input').val('');
     });
   }
+  if ($('.swiper-box.featured-black-week-home').length) {
+    createSlider(config.swiperdealhome);
+  }
+  
   if(isShopsPage) {
     if (catIdParam) {
       createElements({ ...config.allShops, queryParameters: { ...config.allShops.queryParameters, CategoryIds: catIdParam } });
@@ -442,7 +486,7 @@ Weglot.on('initialized', ()=> {
     createElements(config.featuredShopsMenu);
   }
   
-  if ($('body > .hero.black-week.wf-section').length) {
+  if ($('body .n-wrapper-heading-subheading._100').length) {
     createSlider(config.swiper25to50offall);
     createSlider(config.swiper25offall);
     createSlider(config.swiperupto80);
@@ -514,7 +558,6 @@ async function filterDiscountShops(filteredCat = '') {
   $(configAll.selector).first().html(html);
 
   if (!finalShops.length) {
-    $('.n-shops .n-featured-shops-wrapper').hide();
     $('.n-search-error-wrapper').show();
     $('.n-pagination').hide();
     $('html, body').animate({
@@ -813,7 +856,7 @@ async function anydayAPI(path, method = "GET", data, version, structure, setPage
   queryString = "";
   if (method === "GET" && data !== undefined) {
     var queryString = Object.keys(data).map(function (key) {
-      if (key === 'categoryIds' && Array.isArray(data[key])) {
+      if (key === 'CategoryIds' && Array.isArray(data[key])) {
         var categoriesIds = data[key];
         return Object.keys(categoriesIds).map(function (index) {
           return 'CategoryIds=' + categoriesIds[index];
@@ -897,31 +940,31 @@ function createCategoryMobileMenu(data) {
         <a href="/black-week-deals" class="n-subcategory-name">All</a>
       </div>
       <div class="n-mm-menu-item-wrapper">
-        <a href="/shop?cat-id=" class="n-subcategory-name">Save from 25% to 50% on all</a>
+        <a href="/black-week?deal-id=7a418f22-85f1-4f6c-997e-7390dccf3229" class="n-subcategory-name">Save from 25% to 50% on all</a>
       </div>
       <div class="n-mm-menu-item-wrapper">
-        <a href="/shop?cat-id=" class="n-subcategory-name">Save from 25% on all</a>
+        <a href="/black-week?deal-id=9849bf3f-63d9-4305-8610-c1d87f258f5d" class="n-subcategory-name">Save from 25% on all</a>
       </div>
       <div class="n-mm-menu-item-wrapper">
-        <a href="/shop?cat-id=" class="n-subcategory-name">Save up to 80%</a>
+        <a href="/black-week?deal-id=b722cea6-8fea-4870-a1e4-57b8a44e807d" class="n-subcategory-name">Save up to 80%</a>
       </div>
       <div class="n-mm-menu-item-wrapper">
-        <a href="/shop?cat-id=" class="n-subcategory-name">Save up to 70%</a>
+        <a href="/black-week?deal-id=8240993c-6dfc-42f0-98ba-dd0c4830990f" class="n-subcategory-name">Save up to 70%</a>
       </div>
       <div class="n-mm-menu-item-wrapper">
-        <a href="/shop?cat-id=" class="n-subcategory-name">Save up to 60%</a>
+        <a href="/black-week?deal-id=069c7108-fa76-48b0-aca3-61b751f2324e" class="n-subcategory-name">Save up to 60%</a>
       </div>
       <div class="n-mm-menu-item-wrapper">
-        <a href="/shop?cat-id=" class="n-subcategory-name">Save up to 50%</a>
+        <a href="/black-week?deal-id=2a9a6112-65b1-4d5f-a3f2-aec68b9075f4" class="n-subcategory-name">Save up to 50%</a>
       </div>
       <div class="n-mm-menu-item-wrapper">
-        <a href="/shop?cat-id=" class="n-subcategory-name">Save up to 40%</a>
+        <a href="/black-week?deal-id=66b92fdb-d6cf-4628-be21-7e0ef9479206" class="n-subcategory-name">Save up to 40%</a>
       </div>
       <div class="n-mm-menu-item-wrapper">
-        <a href="/shop?cat-id=" class="n-subcategory-name">Save up to 30%</a>
+        <a href="/black-week?deal-id=c71b7386-a61f-4388-aa13-7ea018599e2d" class="n-subcategory-name">Save up to 30%</a>
       </div>
       <div class="n-mm-menu-item-wrapper">
-        <a href="/shop?cat-id=" class="n-subcategory-name">Save up to 20%</a>
+        <a href="/black-week?deal-id=3cd1f971-b82d-4812-a8e9-f213e9a1bdf8" class="n-subcategory-name">Save up to 20%</a>
       </div>
     </div>
   </div>
@@ -1331,6 +1374,30 @@ document.addEventListener('DOMContentLoaded', function () {
     on: {
       init: function() {
         $('.swiper-box .swiper.up-to-20 .swiper-wrapper').css({display: 'flex'});
+      }
+    }
+  });
+
+  var varswiperdealhome = new Swiper(".swiper-box .swiper.black-week-swiper", {
+    slidesPerView: 1.2,
+    spaceBetween: 30,
+    navigation: {
+      nextEl: '.w-slider-arrow-right',
+      prevEl: '.w-slider-arrow-left',
+    },
+    breakpoints: {
+      768: {
+        slidesPerView: 2.5,
+        spaceBetween: 20,
+      },
+      1024: {
+        slidesPerView: 4.5,
+        spaceBetween: 30,
+      },
+    },
+    on: {
+      init: function() {
+        $('.swiper-box .swiper.black-week-swiper .swiper-wrapper').css({display: 'flex'});
       }
     }
   });
