@@ -1,6 +1,7 @@
 var language = 'en';
 var url = new URL(window.location.href);
 var catIdParam = url.searchParams.get("cat-id");
+var dealCatIdParam = url.searchParams.get("deal-id");
 var config = {};
 var discountCategories = {
   'all': {
@@ -205,10 +206,9 @@ Weglot.on('initialized', ()=> {
       endpoint: 'shops',
       method: 'GET',
       queryParameters: {
-        PageSize: 50,
         Language: language,
-        Featured: true,
-        display: true
+        display: true,
+        CategoryIds: ['7a418f22-85f1-4f6c-997e-7390dccf3229']
       },
       version: 'v2',
       structure: 'data.result'
@@ -219,10 +219,9 @@ Weglot.on('initialized', ()=> {
       endpoint: 'shops',
       method: 'GET',
       queryParameters: {
-        PageSize: 50,
         Language: language,
-        Featured: true,
-        display: true
+        display: true,
+        CategoryIds: ['9849bf3f-63d9-4305-8610-c1d87f258f5d']
       },
       version: 'v2',
       structure: 'data.result'
@@ -233,10 +232,9 @@ Weglot.on('initialized', ()=> {
       endpoint: 'shops',
       method: 'GET',
       queryParameters: {
-        PageSize: 50,
         Language: language,
-        Featured: true,
-        display: true
+        display: true,
+        CategoryIds: ['b722cea6-8fea-4870-a1e4-57b8a44e807d']
       },
       version: 'v2',
       structure: 'data.result'
@@ -247,10 +245,9 @@ Weglot.on('initialized', ()=> {
       endpoint: 'shops',
       method: 'GET',
       queryParameters: {
-        PageSize: 50,
         Language: language,
-        Featured: true,
-        display: true
+        display: true,
+        CategoryIds: ['8240993c-6dfc-42f0-98ba-dd0c4830990f']
       },
       version: 'v2',
       structure: 'data.result'
@@ -261,10 +258,9 @@ Weglot.on('initialized', ()=> {
       endpoint: 'shops',
       method: 'GET',
       queryParameters: {
-        PageSize: 50,
         Language: language,
-        Featured: true,
-        display: true
+        display: true,
+        CategoryIds: ['069c7108-fa76-48b0-aca3-61b751f2324e']
       },
       version: 'v2',
       structure: 'data.result'
@@ -275,10 +271,9 @@ Weglot.on('initialized', ()=> {
       endpoint: 'shops',
       method: 'GET',
       queryParameters: {
-        PageSize: 50,
         Language: language,
-        Featured: true,
-        display: true
+        display: true,
+        CategoryIds: ['2a9a6112-65b1-4d5f-a3f2-aec68b9075f4']
       },
       version: 'v2',
       structure: 'data.result'
@@ -289,10 +284,9 @@ Weglot.on('initialized', ()=> {
       endpoint: 'shops',
       method: 'GET',
       queryParameters: {
-        PageSize: 50,
         Language: language,
-        Featured: true,
-        display: true
+        display: true,
+        CategoryIds: ['66b92fdb-d6cf-4628-be21-7e0ef9479206']
       },
       version: 'v2',
       structure: 'data.result'
@@ -303,10 +297,9 @@ Weglot.on('initialized', ()=> {
       endpoint: 'shops',
       method: 'GET',
       queryParameters: {
-        PageSize: 50,
         Language: language,
-        Featured: true,
-        display: true
+        display: true,
+        CategoryIds: ['c71b7386-a61f-4388-aa13-7ea018599e2d']
       },
       version: 'v2',
       structure: 'data.result'
@@ -317,9 +310,8 @@ Weglot.on('initialized', ()=> {
       endpoint: 'shops',
       method: 'GET',
       queryParameters: {
-        PageSize: 50,
         Language: language,
-        Featured: true,
+        CategoryIds: ['3cd1f971-b82d-4812-a8e9-f213e9a1bdf8'],
         display: true
       },
       version: 'v2',
@@ -340,17 +332,31 @@ Weglot.on('initialized', ()=> {
         );
         $('.n-filters-wrapper.n-hidden-on-devices .n-item-filters .n-checkbox-wrapper-bw:first').addClass('selected');
     });
-    //var discFilter = '';
     $('.n-filters-wrapper.n-hidden-on-devices .n-item-filters .n-checkbox-wrapper-bw').click(function () {
       $('.n-filters-wrapper.n-hidden-on-devices .n-item-filters .n-checkbox-wrapper-bw.selected').each(function (index) {
         $(this).removeClass('selected');
       });
       $(this).addClass('selected');
+      $('.n-shops .n-featured-shops-wrapper:first').hide();
       $('.n-bw-page-heading-wrapper').html(discountCategories[$(this).data('key')].heading);
       filterDiscountShops();
     });
     if (!getSelectedCategory().length && getSelectedDiscountCategory() === '') {
-      createElements({ ...config.allShops, queryParameters: { ...config.allShops.queryParameters, CategoryIds: catIdParam } });
+      var id;
+      if (dealCatIdParam) {
+        id = dealCatIdParam;
+        $('.n-shops .n-featured-shops-wrapper:first').hide();
+      } else {
+        id = catIdParam
+      }
+      $('.n-filters-wrapper.n-hidden-on-devices .n-item-filters .n-checkbox-wrapper-bw.selected').each(function (index) {
+        $(this).removeClass('selected');
+      });
+      $('.n-filters-wrapper.n-hidden-on-devices .n-item-filters .n-checkbox-wrapper-bw').each(function (index) {
+        if($(this).data('cat-id') == dealCatIdParam)
+          $(this).addClass('selected');
+      });
+      createElements({ ...config.allShops, queryParameters: { ...config.allShops.queryParameters, CategoryIds: id } });
     } else {
       filterDiscountShops();
     }
@@ -437,15 +443,15 @@ Weglot.on('initialized', ()=> {
   }
   
   if ($('body > .hero.black-week.wf-section').length) {
-    createSlider(config.swiper25to50offall, JSON.parse(storageFeatured).shops);
-    createSlider(config.swiper25offall, JSON.parse(storageFeatured).shops);
-    createSlider(config.swiperupto80, JSON.parse(storageFeatured).shops);
-    createSlider(config.swiperupto70, JSON.parse(storageFeatured).shops);
-    createSlider(config.swiperupto60, JSON.parse(storageFeatured).shops);
-    createSlider(config.swiperupto50, JSON.parse(storageFeatured).shops);
-    createSlider(config.swiperupto40, JSON.parse(storageFeatured).shops);
-    createSlider(config.swiperupto30, JSON.parse(storageFeatured).shops);
-    createSlider(config.swiperupto20, JSON.parse(storageFeatured).shops);
+    createSlider(config.swiper25to50offall);
+    createSlider(config.swiper25offall);
+    createSlider(config.swiperupto80);
+    createSlider(config.swiperupto70);
+    createSlider(config.swiperupto60);
+    createSlider(config.swiperupto50);
+    createSlider(config.swiperupto40);
+    createSlider(config.swiperupto30);
+    createSlider(config.swiperupto20);
   }
 });
   
@@ -516,7 +522,6 @@ async function filterDiscountShops(filteredCat = '') {
     }, 1000);
     
   } else {
-    $('.n-shops .n-featured-shops-wrapper').show();
     $('.n-search-error-wrapper').hide();
     $('.n-pagination').hide();
     $('.n-filters-dropdown.w-dropdown').hide();
@@ -878,8 +883,8 @@ function truncateString(string = '', maxLength = 24) {
 function createCategoryMobileMenu(data) {
   var deals = `
   <div class="n-category-name">
-    <div class="sibling">
-      <div class="n-mm-menu-link"><a href="/black-week-deals">Black Week deals</a></div>
+    <div class="sibling black-week">
+      <div class="n-mm-menu-link">Black Week deals</div>
     </div>
     <div style="display: none; transform: translate3d(100vw, 0px, 0px) scale3d(1, 1, 1) rotateX(0deg) rotateY(0deg) rotateZ(0deg) skew(0deg, 0deg); transform-style: preserve-3d;" class="sibling-2 absolute">
       <div class="n-mm-menu-header"><img src="https://uploads-ssl.webflow.com/630f0a12999419c9747bd320/632833cd94be2a75c049ba1d_Icon%20(39).svg" loading="lazy" alt="" class="n-mm-back">
@@ -889,28 +894,34 @@ function createCategoryMobileMenu(data) {
         <div class="n-mm-menu-heading">Black Week deals</div>
       </div>
       <div class="n-mm-menu-item-wrapper">
+        <a href="/black-week-deals" class="n-subcategory-name">All</a>
+      </div>
+      <div class="n-mm-menu-item-wrapper">
         <a href="/shop?cat-id=" class="n-subcategory-name">Save from 25% to 50% on all</a>
       </div>
       <div class="n-mm-menu-item-wrapper">
-        <a href="/shop?cat-id=" class="n-subcategory-name">View All</a>
+        <a href="/shop?cat-id=" class="n-subcategory-name">Save from 25% on all</a>
       </div>
       <div class="n-mm-menu-item-wrapper">
-        <a href="/shop?cat-id=" class="n-subcategory-name">View All</a>
+        <a href="/shop?cat-id=" class="n-subcategory-name">Save up to 80%</a>
       </div>
       <div class="n-mm-menu-item-wrapper">
-        <a href="/shop?cat-id=" class="n-subcategory-name">View All</a>
+        <a href="/shop?cat-id=" class="n-subcategory-name">Save up to 70%</a>
       </div>
       <div class="n-mm-menu-item-wrapper">
-        <a href="/shop?cat-id=" class="n-subcategory-name">View All</a>
+        <a href="/shop?cat-id=" class="n-subcategory-name">Save up to 60%</a>
       </div>
       <div class="n-mm-menu-item-wrapper">
-        <a href="/shop?cat-id=" class="n-subcategory-name">View All</a>
+        <a href="/shop?cat-id=" class="n-subcategory-name">Save up to 50%</a>
       </div>
       <div class="n-mm-menu-item-wrapper">
-        <a href="/shop?cat-id=" class="n-subcategory-name">View All</a>
+        <a href="/shop?cat-id=" class="n-subcategory-name">Save up to 40%</a>
       </div>
       <div class="n-mm-menu-item-wrapper">
-        <a href="/shop?cat-id=" class="n-subcategory-name">View All</a>
+        <a href="/shop?cat-id=" class="n-subcategory-name">Save up to 30%</a>
+      </div>
+      <div class="n-mm-menu-item-wrapper">
+        <a href="/shop?cat-id=" class="n-subcategory-name">Save up to 20%</a>
       </div>
     </div>
   </div>
@@ -1480,23 +1491,23 @@ document.addEventListener('DOMContentLoaded', function () {
   * Category clicked -> Show subcatgory list -> restrict Category list height to 100vh and overflow hidden
   */
   $('body').on('click', '.n-category-name', function (e) {
-    // $(this).children('.sibling').next().css({
-    //   display: 'block',
-    //   transform: 'translate3d(0px, 0px, 0px) scale3d(1, 1, 1) rotateX(0deg) rotateY(0deg) rotateZ(0deg) skew(0deg, 0deg)',
-    //   'transform-style': 'preserve-3d',
-    //   height: '100vh',
-    //   overflow: 'scroll'
-    // }).animate({
-    //   scrollTop: 0
-    // });
-    // $(this).parent('.sibling.absolute').css({
-    //   display: 'block',
-    //   transform: 'translate3d(0px, 0px, 0px) scale3d(1, 1, 1) rotateX(0deg) rotateY(0deg) rotateZ(0deg) skew(0deg, 0deg)',
-    //   'transform-style': 'preserve-3d',
-    //   overflow: 'scroll'
-    // }).animate({
-    //   scrollTop: 0
-    // });
+    $(this).children('.sibling .black-week').next().css({
+      display: 'block',
+      transform: 'translate3d(0px, 0px, 0px) scale3d(1, 1, 1) rotateX(0deg) rotateY(0deg) rotateZ(0deg) skew(0deg, 0deg)',
+      'transform-style': 'preserve-3d',
+      height: '100vh',
+      overflow: 'scroll'
+    }).animate({
+      scrollTop: 0
+    });
+    $(this).parent('.sibling.absolute').css({
+      display: 'block',
+      transform: 'translate3d(0px, 0px, 0px) scale3d(1, 1, 1) rotateX(0deg) rotateY(0deg) rotateZ(0deg) skew(0deg, 0deg)',
+      'transform-style': 'preserve-3d',
+      overflow: 'scroll'
+    }).animate({
+      scrollTop: 0
+    });
   });
   
   /**
@@ -1562,7 +1573,7 @@ document.addEventListener('DOMContentLoaded', function () {
       behavior: 'smooth'
     });
   });
-  addCountdown('.n-timer-wrapper', '+1', "Nov 21, 2022 00:00:00");
+  addCountdown('.n-timer-wrapper', '+1', "Nov 26, 2022 00:00:00");
 });
       
       
@@ -1584,7 +1595,7 @@ function addCountdown(selector, offset, date) {
     $(selector).children('.n-timer-numbers').eq(3).html(seconds);
     if (distance < 0) {
       clearInterval(x);
-      $(this).hide();
+      $(selector).hide();
     }
   }, 1000);
 }
