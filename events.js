@@ -16,9 +16,9 @@ var allDealCategories = [
 ];
 var discountCategories = {
   'all': {
-    caption: 'All partner</br>shops',
+    caption: 'All deals',
     catId: '',
-    heading: `<h2 class="n-h2">All partner shops</h2>`
+    heading: `<h2 class="n-h2">All deals</h2>`
   },
   '25t050offall': {
     caption: 'Save from<span class="pink-text">20%</span></br>to<span class="pink-text">50%</span>on all',
@@ -85,6 +85,23 @@ Weglot.on('initialized', ()=> {
     allShops: {
       selector: '.n-featured-shops-wrapper .all-shop-list-wrapper',
       templateGetter: 'getAllShop',
+      endpoint: 'shops',
+      method: 'GET',
+      queryParameters: {
+        PageSize: 24,
+        Language: language,
+        display: true,
+        SortBy: 'CreatedDate',
+        Ascending: false
+      },
+      version: 'v2',
+      structure: 'data.result',
+      after: 'getAllShop',
+      setPage: true
+    },
+    allShopsBlackWeek: {
+      selector: '.n-featured-shops-wrapper .all-shop-list-wrapper',
+      templateGetter: 'getAllShopBackWeek',
       endpoint: 'shops',
       method: 'GET',
       queryParameters: {
@@ -191,7 +208,7 @@ Weglot.on('initialized', ()=> {
         Language: language,
       },
       version: 'v1',
-      structure: 'data'
+      structure: 'data.subCategories'
     },
     categoriesMenu: {
       selector: '.n-categories-grid-mega-menu',
@@ -224,7 +241,7 @@ Weglot.on('initialized', ()=> {
     },
     swiper25to50offall: {
       selector: '.swiper-box .swiper._25-to-50 .swiper-wrapper .swiper-slide',
-      templateGetter: 'getAllShop',
+      templateGetter: 'getAllShopBackWeek',
       endpoint: 'shops',
       method: 'GET',
       queryParameters: {
@@ -237,7 +254,7 @@ Weglot.on('initialized', ()=> {
     },
     swiper25offall: {
       selector: '.swiper-box .swiper._25 .swiper-wrapper .swiper-slide',
-      templateGetter: 'getAllShop',
+      templateGetter: 'getAllShopBackWeek',
       endpoint: 'shops',
       method: 'GET',
       queryParameters: {
@@ -250,7 +267,7 @@ Weglot.on('initialized', ()=> {
     },
     swiperupto80: {
       selector: '.swiper-box .swiper.up-to-80 .swiper-wrapper .swiper-slide',
-      templateGetter: 'getAllShop',
+      templateGetter: 'getAllShopBackWeek',
       endpoint: 'shops',
       method: 'GET',
       queryParameters: {
@@ -263,7 +280,7 @@ Weglot.on('initialized', ()=> {
     },
     swiperupto70: {
       selector: '.swiper-box .swiper.up-to-70 .swiper-wrapper .swiper-slide',
-      templateGetter: 'getAllShop',
+      templateGetter: 'getAllShopBackWeek',
       endpoint: 'shops',
       method: 'GET',
       queryParameters: {
@@ -276,7 +293,7 @@ Weglot.on('initialized', ()=> {
     },
     swiperupto60: {
       selector: '.swiper-box .swiper.up-to-60 .swiper-wrapper .swiper-slide',
-      templateGetter: 'getAllShop',
+      templateGetter: 'getAllShopBackWeek',
       endpoint: 'shops',
       method: 'GET',
       queryParameters: {
@@ -289,7 +306,7 @@ Weglot.on('initialized', ()=> {
     },
     swiperupto50: {
       selector: '.swiper-box .swiper.up-to-50 .swiper-wrapper .swiper-slide',
-      templateGetter: 'getAllShop',
+      templateGetter: 'getAllShopBackWeek',
       endpoint: 'shops',
       method: 'GET',
       queryParameters: {
@@ -302,7 +319,7 @@ Weglot.on('initialized', ()=> {
     },
     swiperupto40: {
       selector: '.swiper-box .swiper.up-to-40 .swiper-wrapper .swiper-slide',
-      templateGetter: 'getAllShop',
+      templateGetter: 'getAllShopBackWeek',
       endpoint: 'shops',
       method: 'GET',
       queryParameters: {
@@ -315,7 +332,7 @@ Weglot.on('initialized', ()=> {
     },
     swiperupto30: {
       selector: '.swiper-box .swiper.up-to-30 .swiper-wrapper .swiper-slide',
-      templateGetter: 'getAllShop',
+      templateGetter: 'getAllShopBackWeek',
       endpoint: 'shops',
       method: 'GET',
       queryParameters: {
@@ -328,7 +345,7 @@ Weglot.on('initialized', ()=> {
     },
     swiperupto20: {
       selector: '.swiper-box .swiper.up-to-20 .swiper-wrapper .swiper-slide',
-      templateGetter: 'getAllShop',
+      templateGetter: 'getAgetAllShopBackWeekllShop',
       endpoint: 'shops',
       method: 'GET',
       queryParameters: {
@@ -341,7 +358,7 @@ Weglot.on('initialized', ()=> {
     },
     swiperdealhome: {
       selector: '.swiper-box .swiper.black-week-swiper .swiper-wrapper .swiper-slide',
-      templateGetter: 'getAllShop',
+      templateGetter: 'getAllShopBackWeek',
       endpoint: 'shops',
       method: 'GET',
       queryParameters: {
@@ -357,7 +374,7 @@ Weglot.on('initialized', ()=> {
   var isBlackweekPage = $('.n-section.hero.black-week.wf-section').length ? true : false;
   if (isBlackweekPage) {
     $('.n-filters-wrapper.n-hidden-on-devices .n-item-filters').empty();
-    $('.n-bw-page-heading-wrapper').html('<h2 class "n-h2">All partner shops</h2>');
+    $('.n-bw-page-heading-wrapper').html('<h2 class "n-h2">All deals</h2>');
     Object.keys(discountCategories).forEach(function(k){
       $('.n-filters-wrapper.n-hidden-on-devices .n-item-filters').append(
         `<div class="n-checkbox-wrapper-bw" data-cat-id="${discountCategories[k].catId}" data-key="${k}">
@@ -374,7 +391,10 @@ Weglot.on('initialized', ()=> {
       });
       $('div.w-checkbox-input').removeClass('w--redirected-checked');
       $(this).addClass('selected');
-      //createElements({ ...config.categoriesBlackWeek, endpoint: 'categories/'+$(this).data('cat-id') }).then(count => $('.n-item-filters').show());
+      if ($(this).data('cat-id') == '')
+        createElements({ ...config.categories, endpoint: 'categories' }).then(count => $('.n-item-filters').show());
+      else
+        createElements({ ...config.categoriesBlackWeek, endpoint: 'categories/'+$(this).data('cat-id') }).then(count => $('.n-item-filters').show());
       $('.n-shops .n-featured-shops-wrapper:first').hide();
       $('.n-bw-page-heading-wrapper').html(discountCategories[$(this).data('key')].heading);
       filterDiscountShops();
@@ -398,7 +418,7 @@ Weglot.on('initialized', ()=> {
         if($(this).data('cat-id') == dealCatIdParam)
           $(this).addClass('selected');
       });
-      createElements({ ...config.allShops, queryParameters: { ...config.allShops.queryParameters, CategoryIds: id } });
+      createElements({ ...config.allShopsBlackWeek, queryParameters: { ...config.allShops.queryParameters, CategoryIds: id } });
     } else {
       filterDiscountShops();
     }
@@ -514,7 +534,7 @@ async function filterDiscountShops(filteredCat = '') {
     configAll = { ...config.allShops, queryParameters: { ...config.allShops.queryParameters, Search: $('.n-search-input.w-input').val().trim() } };
   }
   var discountedConfig = { ...configAll, queryParameters: { ...configAll.queryParameters, CategoryIds: [discountCat] } };
-  var filteredConfig = { ...configAll, queryParameters: { ...configAll.queryParameters, Main: true, CategoryIds: [filteredCat] } };
+  var filteredConfig = { ...configAll, queryParameters: { ...configAll.queryParameters, CategoryIds: [filteredCat] } };
   var discounted = await anydayAPI(discountedConfig.endpoint,
     discountedConfig.method,
     discountedConfig.queryParameters,
@@ -533,19 +553,18 @@ async function filterDiscountShops(filteredCat = '') {
 
   var finalShops;
   if (filteredCat != '') {
-    finalShops = filtered.filter(filteredshop => {
-      var found = false;
-      discounted.forEach(function (discountedShop) {
-        if (discountedShop.id === filteredshop.id) {
-          found = true;
-        }
-      });
-      return found;
-    })
+    finalShops = filtered;
   } else {
     finalShops = discounted;
   }
-
+  finalShops = finalShops.map(shop => {
+    var shopUrlArray = shop.marketingUrl ? shop.marketingUrl.split('utm_medium') : [];
+    if (shopUrlArray.length > 1) {
+      shopUrlArray[1] = "utm_medium=website&amp;utm_campaign=blackweek";
+      shop.marketingUrl = shopUrlArray.join('');
+    }
+    return shop;
+  });
   var html = "";
   var limit = configAll.limit ? configAll.limit : finalShops.length;
   html += (configAll.before && getBefore(configAll.before, finalShops) !== null) ? getBefore(configAll.before, finalShops) : '';
@@ -627,6 +646,41 @@ function getTemplate(name,data) {
       </div>
       `;
     },
+    'getAllShopBackWeek': function (data) {
+      if (!data) {
+        return '';
+      }
+      var imageUrl = "https://uploads-ssl.webflow.com/630f0a12999419c9747bd320/63328cd7b24127bb78ef71c2_Frame%20631786.svg";
+      if (data.featuredBannerImages.length) {
+        imageUrl = data.featuredBannerImages[0].url
+      }
+      var category = '';
+      if (data.mainCategory) {
+        category = data.mainCategory.name;
+      }
+      
+      var logoImageUrl = "https://uploads-ssl.webflow.com/630f0a12999419c9747bd320/63328cd7b24127bb78ef71c2_Frame%20631786.svg";
+      if (data.logoImages.length) {
+        logoImageUrl = data.logoImages[0].url;
+      }
+
+      var shopUrlArray = data.marketingUrl ? data.marketingUrl.split('utm_medium') : [];
+      if (shopUrlArray.length > 1) {
+        shopUrlArray[1] = "utm_medium=website&amp;utm_campaign=blackweek";
+        data.marketingUrl = shopUrlArray.join('');
+      }
+      
+      return `
+      <div class="n-wrapper-store-card">
+      <a href="${data.marketingUrl}" class="n-store-link w-inline-block"></a>
+      <div class="n-store-image-wrapper"><img src="${imageUrl}" alt="" class="n-store-image">
+      <div class="n-logo-wrapper"><img src="${logoImageUrl}" alt="" class="n-shop-logo"></div>
+      </div>
+      <div fs-cmsfilter-field="name" class="n-shop-name">${truncateString(data.name)}</div>
+      <div class="n-card-category-name">${category}</div>
+      </div>
+      `;
+    },
     'getFeaturedShop': function(data) {
       if (!data /*|| !data.display*/) {
         return '';
@@ -652,6 +706,8 @@ function getTemplate(name,data) {
       `;
     },
     'getCategory': function (data) {
+      if (allDealCategories.includes(data.id))
+        return '';
       var activateClass = '';
       if (data.id == catIdParam) {
         activateClass = "w--redirected-checked";
@@ -672,7 +728,9 @@ function getTemplate(name,data) {
       <div class="n-tab-text n-hidden-on-devices" data-cat-id="${data.id}">${data.name}</div>
       `;
     },
-    'getCategoryMenu': function(data) {
+    'getCategoryMenu': function (data) {
+      if (allDealCategories.includes(data.id))
+        return '';
       return `
       <a href="/shop?cat-id=${data.id}" class="n-categories w-dropdown-link" tabindex="0">${data.name}</a>
       `;
