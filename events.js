@@ -16,7 +16,7 @@ var allDealCategories = [
 ];
 var discountCategories = {
   'all': {
-    caption: 'All deals',
+    caption: 'All</br>deals',
     catId: '',
     heading: `<h2 class="n-h2">All deals</h2>`
   },
@@ -39,43 +39,43 @@ var discountCategories = {
   upto80: {
     caption: 'Save up to</br><span class="pink-text">80%</span>',
     catId: 'b722cea6-8fea-4870-a1e4-57b8a44e807d',
-    heading: `<h2 id="shops" class="n-h2">Save upto</h2>
+    heading: `<h2 id="shops" class="n-h2">Save up to</h2>
       <h2 id="shops" class="n-h2 pink-text">80%</h2>`
   },
   upto70: {
     caption: 'Save up to</br><span class="pink-text">70%</span>',
     catId: '8240993c-6dfc-42f0-98ba-dd0c4830990f',
-    heading: `<h2 id="shops" class="n-h2">Save upto</h2>
+    heading: `<h2 id="shops" class="n-h2">Save up to</h2>
       <h2 id="shops" class="n-h2 pink-text">70%</h2>`
   },
   upto60: {
     caption: 'Save up to</br><span class="pink-text">60%</span>',
     catId: '069c7108-fa76-48b0-aca3-61b751f2324e',
-    heading: `<h2 id="shops" class="n-h2">Save upto</h2>
+    heading: `<h2 id="shops" class="n-h2">Save up to</h2>
       <h2 id="shops" class="n-h2 pink-text">60%</h2>`
   },
   upto50: {
     caption: 'Save up to</br><span class="pink-text">50%</span>',
     catId: '2a9a6112-65b1-4d5f-a3f2-aec68b9075f4',
-    heading: `<h2 id="shops" class="n-h2">Save upto</h2>
+    heading: `<h2 id="shops" class="n-h2">Save up to</h2>
       <h2 id="shops" class="n-h2 pink-text">50%</h2>`
   },
   upto40: {
     caption: 'Save up to</br><span class="pink-text">40%</span>',
     catId: '66b92fdb-d6cf-4628-be21-7e0ef9479206',
-    heading: `<h2 id="shops" class="n-h2">Save upto</h2>
+    heading: `<h2 id="shops" class="n-h2">Save up to</h2>
       <h2 id="shops" class="n-h2 pink-text">40%</h2>`
   },
   upto30: {
     caption: 'Save up to</br><span class="pink-text">30%</span>',
     catId: 'c71b7386-a61f-4388-aa13-7ea018599e2d',
-    heading: `<h2 id="shops" class="n-h2">Save upto</h2>
+    heading: `<h2 id="shops" class="n-h2">Save up to</h2>
       <h2 id="shops" class="n-h2 pink-text">30%</h2>`
   },
   upto20: {
     caption: 'Save up to</br><span class="pink-text">20%</span>',
     catId: '3cd1f971-b82d-4812-a8e9-f213e9a1bdf8',
-    heading: `<h2 id="shops" class="n-h2">Save upto</h2>
+    heading: `<h2 id="shops" class="n-h2">Save up to</h2>
       <h2 id="shops" class="n-h2 pink-text">20%</h2>`
   }
 };
@@ -220,7 +220,6 @@ Weglot.on('initialized', ()=> {
       },
       version: 'v1',
       structure: 'data',
-      limit: 14,
       after: 'getCategoryMenu'
     },
     featuredShopsMenu: {
@@ -524,6 +523,7 @@ Weglot.on('initialized', ()=> {
 async function filterDiscountShops(filteredCat = '') {
   var discountCat = getSelectedDiscountCategory();
   var searchTerm = '';
+  var setPage = false;
   if(filteredCat === '')
     filteredCat = getSelectedCategory();
   if ($('.n-search-wrapper .n-search-input.shop.w-input').val().trim().length) {
@@ -533,6 +533,9 @@ async function filterDiscountShops(filteredCat = '') {
   if ($('.n-search-input.w-input').val().trim().length) {
     configAll = { ...config.allShops, queryParameters: { ...config.allShops.queryParameters, Search: $('.n-search-input.w-input').val().trim() } };
   }
+  if (discountCat === '' && !filteredCat.length) {
+    setPage = true;
+  }
   var discountedConfig = { ...configAll, queryParameters: { ...configAll.queryParameters, CategoryIds: [discountCat] } };
   var filteredConfig = { ...configAll, queryParameters: { ...configAll.queryParameters, CategoryIds: [filteredCat] } };
   var discounted = await anydayAPI(discountedConfig.endpoint,
@@ -540,7 +543,7 @@ async function filterDiscountShops(filteredCat = '') {
     discountedConfig.queryParameters,
     discountedConfig.version,
     discountedConfig.structure,
-    discountedConfig.setPage ? config.setPage : undefined);
+    true);
   
   if (filteredCat != '') {
     var filtered = await anydayAPI(filteredConfig.endpoint,
@@ -548,7 +551,7 @@ async function filterDiscountShops(filteredCat = '') {
       filteredConfig.queryParameters,
       filteredConfig.version,
       filteredConfig.structure,
-      filteredConfig.setPage ? config.setPage : undefined);
+      true);
   }
 
   var finalShops;
@@ -578,33 +581,12 @@ async function filterDiscountShops(filteredCat = '') {
   $(configAll.selector).first().html('');
   $(configAll.selector).first().html(html);
 
-
-  if (false) {
-    $('.n-pagination .previous-button, .n-pagination .load-more-button').removeClass('hidden').removeData('page');
-    if (response.data.totalPages == 1) {
-      $('.n-pagination .previous-button, .n-pagination .load-more-button').addClass('hidden');
-    } else if(response.data.page === response.data.totalPages) {
-      $('.n-pagination .load-more-button').addClass('hidden');
-      $('.n-pagination .previous-button').attr('data-page', response.data.page - 1);
-    } else {
-      if (response.data.page === 1) {
-        $('.n-pagination .previous-button').addClass('hidden');
-        $('.n-pagination .load-more-button').attr('data-page', response.data.page + 1);
-      } else {
-        $('.n-pagination .load-more-button').attr('data-page', response.data.page + 1);
-        $('.n-pagination .previous-button').attr('data-page', response.data.page - 1);
-      }
-    }
-  }
-
-
   if (!finalShops.length) {
     $('.n-search-error-wrapper').show();
     $('.n-pagination').hide();
     $('html, body').animate({
       scrollTop: $(".n-search-error-wrapper .n-search-error-text").offset().top - 100
     }, 1000);
-    
   } else {
     $('.n-search-error-wrapper').hide();
     $('.n-pagination').hide();
@@ -1004,6 +986,7 @@ function truncateString(string = '', maxLength = 24) {
 }
       
 function createCategoryMobileMenu(data) {
+  data = data.filter(cat => !allDealCategories.includes(cat.id));
   var deals = `
   <div class="n-category-name">
     <div class="sibling black-week">
@@ -1103,6 +1086,9 @@ function collectShopParameter(param = {}) {
   
   if (!$.isEmptyObject(param)) {
     shopConfig = { ...shopConfig, queryParameters: { ...shopConfig.queryParameters, ...param } };
+  }
+  if ($('.n-section.hero.black-week.wf-section').length && !getSelectedCategory().length && getSelectedDiscountCategory() === '') {
+    shopConfig = { ...shopConfig, queryParameters: { ...shopConfig.queryParameters, CategoryIds: allDealCategories } };
   }
   return shopConfig;
 }
