@@ -534,9 +534,10 @@ async function filterDiscountShops(filteredCat = '') {
     configAll = { ...config.allShops, queryParameters: { ...config.allShops.queryParameters, Search: $('.n-search-input.w-input').val().trim() } };
   }
   if (discountCat === '' && !filteredCat.length) {
+    discountCat = allDealCategories;
     setPage = true;
   }
-  var discountedConfig = { ...configAll, queryParameters: { ...configAll.queryParameters, CategoryIds: [discountCat] } };
+  var discountedConfig = { ...configAll, queryParameters: { ...configAll.queryParameters, CategoryIds: discountCat } };
   var filteredConfig = { ...configAll, queryParameters: { ...configAll.queryParameters, CategoryIds: [filteredCat] } };
   var discounted = await anydayAPI(discountedConfig.endpoint,
     discountedConfig.method,
