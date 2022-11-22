@@ -417,7 +417,7 @@ Weglot.on('initialized', ()=> {
         if($(this).data('cat-id') == dealCatIdParam)
           $(this).addClass('selected');
       });
-      createElements({ ...config.allShopsBlackWeek, queryParameters: { ...config.allShops.queryParameters, CategoryIds: id } });
+      createElements({ ...config.allShopsBlackWeek, queryParameters: { ...config.allShops.queryParameters, CategoryIds: id, PageSize: 175 }, limit: 175 });
     } else {
       filterDiscountShops();
     }
@@ -529,7 +529,7 @@ async function filterDiscountShops(filteredCat = '') {
   if ($('.n-search-wrapper .n-search-input.shop.w-input').val().trim().length) {
     searchTerm = $('.n-search-wrapper .n-search-input.shop.w-input').val().trim();
   }
-  var configAll = { ...config.allShops, queryParameters: { ...config.allShops.queryParameters, PageSize: 100, Search: searchTerm }, limit: 24 };
+  var configAll = { ...config.allShops, queryParameters: { ...config.allShops.queryParameters, PageSize: 175, Search: searchTerm }, limit: 100 };
   if ($('.n-search-input.w-input').val().trim().length) {
     configAll = { ...config.allShops, queryParameters: { ...config.allShops.queryParameters, Search: $('.n-search-input.w-input').val().trim() } };
   }
@@ -543,7 +543,7 @@ async function filterDiscountShops(filteredCat = '') {
     discountedConfig.queryParameters,
     discountedConfig.version,
     discountedConfig.structure,
-    true);
+    false);
   
   if (filteredCat != '') {
     var filtered = await anydayAPI(filteredConfig.endpoint,
@@ -551,7 +551,7 @@ async function filterDiscountShops(filteredCat = '') {
       filteredConfig.queryParameters,
       filteredConfig.version,
       filteredConfig.structure,
-      true);
+      false);
   }
 
   var finalShops;
