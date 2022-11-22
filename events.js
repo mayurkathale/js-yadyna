@@ -451,7 +451,7 @@ Weglot.on('initialized', ()=> {
       $('.n-search-wrapper .n-search-input').val('');
     });
   }
-  if ($('.swiper-box.featured-black-week-home').length) {
+  if ($('.swiper-box.featured-black-week-home').length || $('.swiper-box .swiper.black-week-swiper').length) {
     createSlider(config.swiperdealhome);
   }
   
