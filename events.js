@@ -1662,7 +1662,7 @@ document.addEventListener('DOMContentLoaded', function () {
       display: 'block',
       transform: 'translate3d(0px, 0px, 0px) scale3d(1, 1, 1) rotateX(0deg) rotateY(0deg) rotateZ(0deg) skew(0deg, 0deg)',
       'transform-style': 'preserve-3d',
-      height: '100vh',
+      height: '2300px',
       overflow: 'scroll'
     }).animate({
       scrollTop: 0
