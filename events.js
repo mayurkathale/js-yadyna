@@ -16,71 +16,104 @@ var allDealCategories = [
 ];
 var discountCategories = {
   'all': {
-    caption: 'All</br>deals',
+    'caption-en': 'All</br>deals',
     catId: '',
-    heading: `<h2 class="n-h2">All deals</h2>`
+    'heading-en': `<h2 class="n-h2">All deals</h2>`,
+    'caption-da': 'All</br>deals',
+    'heading-da': `<h2 class="n-h2">All deals</h2>`
   },
   '25t050offall': {
-    caption: 'Save from<span class="pink-text">20%</span></br>to<span class="pink-text">50%</span>on all',
+    'caption-en': 'Save from<span class="pink-text">20%</span></br>to<span class="pink-text">50%</span>on all',
     catId: '7a418f22-85f1-4f6c-997e-7390dccf3229',
-    heading: `<h2 id="shops" class="n-h2">Save from</h2>
+    'heading-en': `<h2 id="shops" class="n-h2">Save from</h2>
       <h2 id="shops" class="n-h2 pink-text">25%</h2>
       <h2 id="shops" class="n-h2">to</h2>
       <h2 id="shops" class="n-h2 pink-text">50%</h2>
-      <h2 id="shops" class="n-h2">on all</h2>`
+      <h2 id="shops" class="n-h2">on all</h2>`,
+    'caption-da': 'Spar<span class="pink-text">20%</span>til<span class="pink-text">50%</span></br>på alle produkter',
+    'heading-da': `<h2 id="shops" class="n-h2">Spar</h2>
+      <h2 id="shops" class="n-h2 pink-text">25%</h2>
+      <h2 id="shops" class="n-h2">til</h2>
+      <h2 id="shops" class="n-h2 pink-text">50%</h2>
+      <h2 id="shops" class="n-h2">på alle produkter</h2>`
   },
   '25offall': {
-    caption: 'Save up to</br><span class="pink-text">25%</span>on all',
+    'caption-en': 'Save up to</br><span class="pink-text">25%</span>on all',
     catId: '9849bf3f-63d9-4305-8610-c1d87f258f5d',
-    heading: `<h2 id="shops" class="n-h2">Save from</h2>
+    'heading-en': `<h2 id="shops" class="n-h2">Save from</h2>
       <h2 id="shops" class="n-h2 pink-text">25%</h2>
-      <h2 id="shops" class="n-h2">on all</h2>`
+      <h2 id="shops" class="n-h2">on all</h2>`,
+    'caption-da': 'Spar op ti<span class="pink-text">25%</span></br>på alle produkter',
+    'heading-da': `<h2 id="shops" class="n-h2">Spar op ti</h2>
+      <h2 id="shops" class="n-h2 pink-text">25%</h2>
+      <h2 id="shops" class="n-h2">på alle produkter</h2>`
   },
   upto80: {
-    caption: 'Save up to</br><span class="pink-text">80%</span>',
+    'caption-en': 'Save up to</br><span class="pink-text">80%</span>',
     catId: 'b722cea6-8fea-4870-a1e4-57b8a44e807d',
-    heading: `<h2 id="shops" class="n-h2">Save up to</h2>
+    'heading-en': `<h2 id="shops" class="n-h2">Save up to</h2>
+      <h2 id="shops" class="n-h2 pink-text">80%</h2>`,
+    'caption-da': 'Spar op til</br><span class="pink-text">80%</span>',
+    'heading-da': `<h2 id="shops" class="n-h2">Spar op til</h2>
       <h2 id="shops" class="n-h2 pink-text">80%</h2>`
   },
   upto70: {
-    caption: 'Save up to</br><span class="pink-text">70%</span>',
+    'caption-en': 'Save up to</br><span class="pink-text">70%</span>',
     catId: '8240993c-6dfc-42f0-98ba-dd0c4830990f',
-    heading: `<h2 id="shops" class="n-h2">Save up to</h2>
+    'heading-en': `<h2 id="shops" class="n-h2">Save up to</h2>
+      <h2 id="shops" class="n-h2 pink-text">70%</h2>`,
+    'caption-da': 'Spar op til</br><span class="pink-text">70%</span>',
+    'heading-da': `<h2 id="shops" class="n-h2">Spar op til</h2>
       <h2 id="shops" class="n-h2 pink-text">70%</h2>`
-  },
+    },
   upto60: {
-    caption: 'Save up to</br><span class="pink-text">60%</span>',
+    'caption-en': 'Save up to</br><span class="pink-text">60%</span>',
     catId: '069c7108-fa76-48b0-aca3-61b751f2324e',
-    heading: `<h2 id="shops" class="n-h2">Save up to</h2>
+    'heading-en': `<h2 id="shops" class="n-h2">Save up to</h2>
+      <h2 id="shops" class="n-h2 pink-text">60%</h2>`,
+    'caption-da': 'Spar op til</br><span class="pink-text">60%</span>',
+    'heading-da': `<h2 id="shops" class="n-h2">Spar op til</h2>
       <h2 id="shops" class="n-h2 pink-text">60%</h2>`
   },
   upto50: {
-    caption: 'Save up to</br><span class="pink-text">50%</span>',
+    'caption-en': 'Save up to</br><span class="pink-text">50%</span>',
     catId: '2a9a6112-65b1-4d5f-a3f2-aec68b9075f4',
-    heading: `<h2 id="shops" class="n-h2">Save up to</h2>
+    'heading-en': `<h2 id="shops" class="n-h2">Save up to</h2>
+      <h2 id="shops" class="n-h2 pink-text">50%</h2>`,
+    'caption-da': 'Spar op til</br><span class="pink-text">50%</span>',
+    'heading-da': `<h2 id="shops" class="n-h2">Spar op til</h2>
       <h2 id="shops" class="n-h2 pink-text">50%</h2>`
-  },
-  upto40: {
-    caption: 'Save up to</br><span class="pink-text">40%</span>',
-    catId: '66b92fdb-d6cf-4628-be21-7e0ef9479206',
-    heading: `<h2 id="shops" class="n-h2">Save up to</h2>
-      <h2 id="shops" class="n-h2 pink-text">40%</h2>`
+    },
+upto40: {
+  'caption-en': 'Save up to</br><span class="pink-text">40%</span>',
+  catId: '66b92fdb-d6cf-4628-be21-7e0ef9479206',
+  'heading-en': `<h2 id="shops" class="n-h2">Save up to</h2>
+    <h2 id="shops" class="n-h2 pink-text">40%</h2>`,
+  'caption-da': 'Spar op til</br><span class="pink-text">40%</span>',
+  'heading-da': `<h2 id="shops" class="n-h2">Spar op til</h2>
+    <h2 id="shops" class="n-h2 pink-text">40%</h2>`
   },
   upto30: {
-    caption: 'Save up to</br><span class="pink-text">30%</span>',
+    'caption-en': 'Save up to</br><span class="pink-text">30%</span>',
     catId: 'c71b7386-a61f-4388-aa13-7ea018599e2d',
-    heading: `<h2 id="shops" class="n-h2">Save up to</h2>
+    'heading-en': `<h2 id="shops" class="n-h2">Save up to</h2>
+      <h2 id="shops" class="n-h2 pink-text">30%</h2>`,
+    'caption-da': 'Spar op til</br><span class="pink-text">30%</span>',
+    'heading-da': `<h2 id="shops" class="n-h2">Spar op til</h2>
       <h2 id="shops" class="n-h2 pink-text">30%</h2>`
   },
   upto20: {
-    caption: 'Save up to</br><span class="pink-text">20%</span>',
+    'caption-en': 'Save up to</br><span class="pink-text">20%</span>',
     catId: '3cd1f971-b82d-4812-a8e9-f213e9a1bdf8',
-    heading: `<h2 id="shops" class="n-h2">Save up to</h2>
+    'heading-en': `<h2 id="shops" class="n-h2">Save up to</h2>
+      <h2 id="shops" class="n-h2 pink-text">20%</h2>`,
+    'caption-da': 'Spar op til</br><span class="pink-text">20%</span>',
+    'heading-da': `<h2 id="shops" class="n-h2">Spar op til</h2>
       <h2 id="shops" class="n-h2 pink-text">20%</h2>`
   }
 };
 Weglot.on('initialized', ()=> {
-  var language = Weglot.getCurrentLang();
+  language = Weglot.getCurrentLang();
   config = {
     allShops: {
       selector: '.n-featured-shops-wrapper .all-shop-list-wrapper',
@@ -377,7 +410,7 @@ Weglot.on('initialized', ()=> {
     Object.keys(discountCategories).forEach(function(k){
       $('.n-filters-wrapper.n-hidden-on-devices .n-item-filters').append(
         `<div class="n-checkbox-wrapper-bw" data-cat-id="${discountCategories[k].catId}" data-key="${k}">
-        <div class="n-checkbox-label-categories">${discountCategories[k].caption}</div>
+        <div class="n-checkbox-label-categories">${discountCategories[k]['caption-'+language]}</div>
         <div class="n-checkbox-bw"></div>
         </div>`
         );
@@ -395,7 +428,7 @@ Weglot.on('initialized', ()=> {
       else
         createElements({ ...config.categoriesBlackWeek, endpoint: 'categories/'+$(this).data('cat-id') }).then(count => $('.n-item-filters').show());
       $('.n-shops .n-featured-shops-wrapper:first').hide();
-      $('.n-bw-page-heading-wrapper').html(discountCategories[$(this).data('key')].heading);
+      $('.n-bw-page-heading-wrapper').html(discountCategories[$(this).data('key')]['heading-'+language]);
       filterDiscountShops();
     });
 
