@@ -562,7 +562,7 @@ async function filterDiscountShops(filteredCat = '') {
   if ($('.n-search-wrapper .n-search-input.shop.w-input').val().trim().length) {
     searchTerm = $('.n-search-wrapper .n-search-input.shop.w-input').val().trim();
   }
-  var configAll = { ...config.allShops, queryParameters: { ...config.allShops.queryParameters, PageSize: 175, Search: searchTerm }, limit: 100 };
+  var configAll = { ...config.allShops, queryParameters: { ...config.allShops.queryParameters, PageSize: 175, Search: searchTerm }, limit: 175 };
   if ($('.n-search-input.w-input').val().trim().length) {
     configAll = { ...config.allShops, queryParameters: { ...config.allShops.queryParameters, Search: $('.n-search-input.w-input').val().trim() } };
   }
