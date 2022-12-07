@@ -1066,9 +1066,9 @@ function collectShopParameter(param = {}) {
     shopConfig = { ...shopConfig, queryParameters: { ...shopConfig.queryParameters, Search: escapeHtml($('.n-search-input.w-input').val()) } };
   }
   if ($('#w-dropdown-list-1').attr('data-sort-decending') && parseInt($('#w-dropdown-list-1').attr('data-sort-decending')) == 1) {
-    shopConfig = { ...shopConfig, queryParameters: { ...shopConfig.queryParameters, SortBy: 'name', Ascending: true } };
+    shopConfig = { ...shopConfig, queryParameters: { ...shopConfig.queryParameters, SortBy: 'name', Ascending: false } };
   } else if ($('#w-dropdown-list-1').attr('data-sort-decending') && parseInt($('#w-dropdown-list-1').attr('data-sort-decending')) == 0) {
-    shopConfig = { ...shopConfig, queryParameters: { ...shopConfig.queryParameters, SortBy: 'name', Ascending: false} };
+    shopConfig = { ...shopConfig, queryParameters: { ...shopConfig.queryParameters, SortBy: 'name', Ascending: true} };
   } else {
     shopConfig = { ...shopConfig, queryParameters: { ...shopConfig.queryParameters, SortBy: 'CreatedDate', Ascending: false} };
   }
