@@ -1021,56 +1021,10 @@ function truncateString(string = '', maxLength = 24) {
       
 function createCategoryMobileMenu(data) {
   data = data.filter(cat => !allDealCategories.includes(cat.id));
-  var deals = `
-  <div class="n-category-name">
-    <div class="sibling black-week">
-      <div class="n-mm-menu-link">Black Week deals</div>
-    </div>
-    <div style="display: none; transform: translate3d(100vw, 0px, 0px) scale3d(1, 1, 1) rotateX(0deg) rotateY(0deg) rotateZ(0deg) skew(0deg, 0deg); transform-style: preserve-3d;" class="sibling-2 absolute">
-      <div class="n-mm-menu-header"><img src="https://uploads-ssl.webflow.com/630f0a12999419c9747bd320/632833cd94be2a75c049ba1d_Icon%20(39).svg" loading="lazy" alt="" class="n-mm-back">
-        <div class="n-mm-header-link">Back to categories</div>
-      </div>
-      <div class="n-mm-menu-item-wrapper">
-        <div class="n-mm-menu-heading">Black Week deals</div>
-      </div>
-      <div class="n-mm-menu-item-wrapper">
-        <a href="/black-week-deals" class="n-subcategory-name">All</a>
-      </div>
-      <div class="n-mm-menu-item-wrapper">
-        <a href="/black-week?deal-id=7a418f22-85f1-4f6c-997e-7390dccf3229" class="n-subcategory-name">Save from 25% to 50% on all</a>
-      </div>
-      <div class="n-mm-menu-item-wrapper">
-        <a href="/black-week?deal-id=9849bf3f-63d9-4305-8610-c1d87f258f5d" class="n-subcategory-name">Save from 25% on all</a>
-      </div>
-      <div class="n-mm-menu-item-wrapper">
-        <a href="/black-week?deal-id=b722cea6-8fea-4870-a1e4-57b8a44e807d" class="n-subcategory-name">Save up to 80%</a>
-      </div>
-      <div class="n-mm-menu-item-wrapper">
-        <a href="/black-week?deal-id=8240993c-6dfc-42f0-98ba-dd0c4830990f" class="n-subcategory-name">Save up to 70%</a>
-      </div>
-      <div class="n-mm-menu-item-wrapper">
-        <a href="/black-week?deal-id=069c7108-fa76-48b0-aca3-61b751f2324e" class="n-subcategory-name">Save up to 60%</a>
-      </div>
-      <div class="n-mm-menu-item-wrapper">
-        <a href="/black-week?deal-id=2a9a6112-65b1-4d5f-a3f2-aec68b9075f4" class="n-subcategory-name">Save up to 50%</a>
-      </div>
-      <div class="n-mm-menu-item-wrapper">
-        <a href="/black-week?deal-id=66b92fdb-d6cf-4628-be21-7e0ef9479206" class="n-subcategory-name">Save up to 40%</a>
-      </div>
-      <div class="n-mm-menu-item-wrapper">
-        <a href="/black-week?deal-id=c71b7386-a61f-4388-aa13-7ea018599e2d" class="n-subcategory-name">Save up to 30%</a>
-      </div>
-      <div class="n-mm-menu-item-wrapper">
-        <a href="/black-week?deal-id=3cd1f971-b82d-4812-a8e9-f213e9a1bdf8" class="n-subcategory-name">Save up to 20%</a>
-      </div>
-    </div>
-  </div>
-  `;
   return `<div class="n-category-name">
     <div class="sibling">
     <div class="n-mm-menu-link"><a href="/shop">All</a></div>
-    </div>
-    ${deals}` +
+    </div>` +
     data.map(cat => {
     var html = `<div class="n-category-name">
     <div data-w-id="${cat.id}" class="sibling">
@@ -1112,9 +1066,10 @@ function collectShopParameter(param = {}) {
     shopConfig = { ...shopConfig, queryParameters: { ...shopConfig.queryParameters, Search: escapeHtml($('.n-search-input.w-input').val()) } };
   }
   if ($('#w-dropdown-list-1').attr('data-sort-decending') && parseInt($('#w-dropdown-list-1').attr('data-sort-decending')) == 1) {
-    shopConfig = { ...shopConfig, queryParameters: { ...shopConfig.queryParameters, Ascending: false } };
-  }
-  if ($('#w-dropdown-list-1').attr('data-sort-decending') && parseInt($('#w-dropdown-list-1').attr('data-sort-decending')) == 2) {
+    shopConfig = { ...shopConfig, queryParameters: { ...shopConfig.queryParameters, SortBy: 'name', Ascending: true } };
+  } else if ($('#w-dropdown-list-1').attr('data-sort-decending') && parseInt($('#w-dropdown-list-1').attr('data-sort-decending')) == 0) {
+    shopConfig = { ...shopConfig, queryParameters: { ...shopConfig.queryParameters, SortBy: 'name', Ascending: false} };
+  } else {
     shopConfig = { ...shopConfig, queryParameters: { ...shopConfig.queryParameters, SortBy: 'CreatedDate', Ascending: false} };
   }
   
